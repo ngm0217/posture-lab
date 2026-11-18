@@ -1,0 +1,929 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:,">
+<title>POSTURE LAB リンク版</title>
+<style>
+:root{
+  --bg:#0b1220; --surface:#131f32; --surface2:#0d1727; --surface3:#192840;
+  --line:#2a3c55; --line2:#40516b; --text:#e9eff8; --dim:#9eafc7; --dim2:#b9c8da;
+  --accent:#2fb3c9; --accent-strong:#146c82; --accent-soft:#8edbc9; --good:#91ddc6;
+  --warn-bg:#392c27; --warn-line:#a97e47; --warn-text:#ffdeb2;
+  --danger-bg:#622c39; --danger-line:#a95b6b;
+  font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+  background:var(--bg); color:var(--text); font-size:15px; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text)}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+button:disabled{opacity:.38;cursor:not-allowed}
+.shell{max-width:1160px;margin:0 auto;padding:14px 14px 90px}
+.toprow{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:4px}
+.status{font-size:12px;color:var(--accent-soft)}
+.btn{background:var(--accent-strong);color:#fff;border:1px solid #42aabd;border-radius:9px;padding:10px 14px;font-weight:650}
+.btn.secondary{background:#22314a;border-color:#425572;color:var(--text)}
+.btn.danger{background:var(--danger-bg);border-color:var(--danger-line)}
+.btn.small{padding:6px 10px;font-size:13px}
+.nav{display:flex;gap:7px;flex-wrap:wrap;padding:12px 0;position:sticky;top:0;background:var(--bg);z-index:5}
+.nav button{white-space:nowrap;background:#17243a;color:#c8d6e8;border:1px solid #30415d;border-radius:9px;padding:9px 12px;font-weight:650}
+.nav button.active{background:var(--accent-strong);color:#fff;border-color:#45bfd4}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px}
+.catgrid{display:grid;grid-template-columns:1fr;gap:12px}
+@media(max-width:560px){.grid2{grid-template-columns:1fr 1fr;gap:8px}.panel{padding:12px}}
+.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.between{justify-content:space-between}
+h2{font-size:20px;margin:0 0 10px}
+h3{font-size:16px;margin:0 0 8px}
+p{line-height:1.6;margin:6px 0}
+.muted{color:var(--dim);font-size:13px}
+label.lbl{display:block;margin:9px 0 5px;color:var(--dim2);font-size:13px}
+input[type=text],input[type=date],input[type=datetime-local],input[type=number],textarea,select{background:var(--surface2);border:1px solid var(--line2);border-radius:8px;padding:9px;width:100%;min-width:0}
+textarea{min-height:64px;resize:vertical}
+.tag{display:inline-block;font-size:12px;padding:3px 8px;border-radius:6px;background:#284059;color:#b8e4eb}
+.tag.good{background:#17453c;color:var(--good)}
+.chip{display:inline-flex;align-items:center;gap:5px;border:1px solid #3c516e;border-radius:8px;padding:7px 10px;margin:3px 2px;background:var(--surface3);font-size:14px;cursor:pointer;user-select:none;white-space:nowrap}
+.chip.on{border-color:#42c4d7;background:#16465a;color:#fff;font-weight:650}
+.chip.off{opacity:.35}
+.seg{display:inline-flex;border:1px solid var(--line2);border-radius:9px;overflow:hidden}
+.seg button{background:var(--surface3);border:0;border-right:1px solid var(--line2);padding:9px 14px;font-size:14px;color:var(--dim2);white-space:nowrap}
+.seg button:last-child{border-right:0}
+.seg button.on{background:var(--accent-strong);color:#fff;font-weight:700}
+.optbtn{border:1px solid #40516b;background:var(--surface3);border-radius:9px;padding:9px 12px;font-size:14px;font-weight:650;color:var(--text)}
+.optbtn.on{border-color:var(--accent);background:var(--accent);color:#06222b}
+.optbtn.small{padding:6px 9px;font-size:13px}
+.warnbox{background:var(--warn-bg);border:1px solid var(--warn-line);border-radius:10px;padding:12px;color:var(--warn-text);margin:10px 0;line-height:1.6}
+details.fold{border:1px solid #334963;border-radius:10px;padding:10px 12px;margin:10px 0}
+details.fold>summary{cursor:pointer;font-weight:650}
+.test{border:1px solid #334963;border-radius:11px;padding:13px;margin:10px 0;background:#18283e}
+table{border-collapse:collapse;width:100%;font-size:13px}
+td,th{padding:8px;border-bottom:1px solid #34445a;text-align:left;vertical-align:top}
+.section{border-top:1px solid #31415b;padding-top:12px;margin-top:14px}
+.level{font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px}
+.level.clue{background:#17453c;color:var(--good)}
+.level.unknown{background:#284059;color:#b8e4eb}
+.level.unlikely{background:#3a3049;color:#cbb8e8}
+.level.mixed{background:#4d3a14;color:#ffcf7d}
+.modal{position:fixed;inset:0;background:rgba(3,8,16,.72);z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.modal .box{background:var(--surface);border:1px solid var(--line2);border-radius:16px 16px 0 0;max-width:720px;width:100%;max-height:88vh;overflow-y:auto;padding:18px}
+@media(min-width:700px){.modal{align-items:center}.modal .box{border-radius:16px}}
+.kv{display:grid;grid-template-columns:110px 1fr;gap:4px 10px;font-size:14px;line-height:1.55}
+.kv dt{color:var(--dim);font-size:13px}
+.kv dd{margin:0}
+.footer{color:var(--dim);font-size:12px;margin-top:28px;line-height:1.7}
+.stickyActions{position:sticky;bottom:0;background:rgba(11,18,32,.95);padding:10px 0;display:flex;gap:8px;flex-wrap:wrap;z-index:4}
+.numin{width:96px!important}
+.banner{background:#173a4a;border:1px solid #2b6b7d;border-radius:10px;padding:12px;margin:10px 0;line-height:1.6}
+.good{color:var(--good)}
+.guidebody{white-space:pre-wrap;line-height:1.75;font-size:14px;color:var(--dim2)}
+.pdfgen{position:fixed;left:-10000px;top:0;width:760px;background:#fff;color:#000;padding:34px 38px;font-size:14px;line-height:1.65}
+.pdfgen h1{font-size:21px;margin:0 0 10px}
+.pdfgen h2{font-size:15.5px;margin:18px 0 6px;border-bottom:1.5px solid #333;padding-bottom:3px}
+.pdfgen p{margin:4px 0;line-height:1.65}
+.pdfgen table{border-collapse:collapse;width:100%;font-size:13px}
+.pdfgen td,.pdfgen th{border:1px solid #888;padding:5px 7px;text-align:left;vertical-align:top;color:#000}
+.pdfgen .prwarn{border:1px solid #a97e47;background:#fbf3e2;padding:8px 10px;margin:10px 0}
+.pdfgen .prnote{font-size:12px;color:#444;border:1px solid #aaa;padding:8px 10px;margin-top:16px}
+</style>
+</head>
+<body>
+<main class="shell">
+  <div class="toprow">
+    <span class="status" id="saved">記録はこの端末のブラウザに保存されます</span>
+    <span class="row">
+      <button class="btn secondary small" onclick="exportJSON()">JSON保存</button>
+      <button class="btn secondary small" onclick="document.getElementById('importfile').click()">JSON読込</button>
+      <input id="importfile" type="file" accept="application/json" hidden onchange="importJSON(event)">
+    </span>
+  </div>
+  <div id="banners"></div>
+  <nav class="nav" id="nav"></nav>
+  <div id="content"></div>
+  <div class="stickyActions" id="actions"></div>
+  <div class="footer">専門家の運動機能評価を補助するツールです。医学的診断・病因の確定・治療効果の保証は行いません。記録はこの端末のブラウザ内（localStorage）に保存され、サーバー版の記録とは共有されません。共有端末で個人情報を入力しないでください。</div>
+  <div style="margin-top:16px">
+    <button class="btn secondary small" onclick="exportSpecJSON()">開発用：仕様JSONをエクスポート</button>
+    <span class="status" id="specStatus" style="margin-left:8px"></span>
+    <p class="muted" style="margin-top:6px">開発・監査用（読み取り専用）：評価カテゴリ・追加テスト・仮説・リリース候補の全定義と推論エンジンの関数ソースを、顧客・セッション情報を含まずにJSONで書き出します。</p>
+  </div>
+</main>
+<div id="modalroot"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+'use strict';
+/* ================= カタログ：カテゴリ（本編と同一） ================= */
+const UNVERIFIED='エビデンス未確認';
+const ORIGIN_LABEL={sheet:'原紙由来',app:'アプリ追加',mvp:'MVP 0.1由来',v112:'v1.1.2由来'};
+const S=(id,label,group)=>({id,label,origin:'sheet',group});
+const A=(id,label,group)=>({id,label,origin:'app',group});
+const NORMAL={id:'normal',label:'異常なし',origin:'sheet'};
+const CATEGORIES=[
+{id:'weight',no:1,ja:'荷重足',en:'Weighted foot',bilateral:false,plane:'前額面・矢状面（荷重分布）',options:[S('balanced','均等','lr'),S('right','右優位','lr'),S('left','左優位','lr'),S('forefoot','前足部','fb'),S('heel','踵','fb')]},
+{id:'breath',no:2,ja:'呼吸',en:'Breath',bilateral:false,plane:'呼吸運動（胸腹の拡張）',note:'胸式と腹式は混合パターンがあり得るため、相互の同時選択は制限していません。',options:[S('thoracic','胸式'),S('abdominal','腹式'),S('shallow','浅い'),S('asymmetry','左右差')]},
+{id:'head',no:3,ja:'頭部',en:'Head',bilateral:false,plane:'矢状面・前額面・水平面',options:[S('forward','前方偏位','sag'),S('backward','後方偏位','sag'),S('tilt_r','右側屈','front'),S('tilt_l','左側屈','front'),S('rot_r','右回旋','trans'),S('rot_l','左回旋','trans')]},
+{id:'neck',no:4,ja:'頸部',en:'Neck',bilateral:false,plane:'矢状面・前額面・水平面',options:[S('hyper','前弯増強','curve'),S('hypo','前弯減少','curve'),S('tilt_r','右側屈','front'),S('tilt_l','左側屈','front'),S('rot_r','右回旋','trans'),S('rot_l','左回旋','trans')]},
+{id:'girdle',no:5,ja:'肩甲帯',en:'Shoulder girdle',bilateral:true,plane:'前額面・矢状面',note:'MVP 0.1の「肩の高さの左右差」は、このカテゴリの左右別「挙上」の差として表現されます。',options:[S('elev','挙上','vert'),S('depr','下制','vert'),S('ant','前方','ap'),S('post','後方','ap'),S('wing','翼状')]},
+{id:'shoulder',no:6,ja:'肩関節',en:'Shoulder joint',bilateral:true,plane:'水平面・矢状面',options:[S('ir','内旋','rot'),S('er','外旋','rot'),S('ant_disp','前方変位'),NORMAL]},
+{id:'thorax',no:7,ja:'胸郭',en:'Thorax / Rib cage',bilateral:false,plane:'矢状面・水平面',options:[S('ant','前方','ap'),S('post','後方','ap'),S('rot_r','右回旋','rot'),S('rot_l','左回旋','rot'),S('flare','フレア')]},
+{id:'lumbar',no:8,ja:'腰椎',en:'Lumbar spine',bilateral:false,plane:'矢状面・前額面・水平面',options:[S('hyper','前弯増強','curve'),S('hypo','前弯減少','curve'),S('tilt_r','右側屈','front'),S('tilt_l','左側屈','front'),S('rot_r','右回旋','trans'),S('rot_l','左回旋','trans')]},
+{id:'pelvis',no:9,ja:'骨盤帯',en:'Pelvic girdle',bilateral:false,plane:'矢状面・前額面・水平面',note:'右回旋・左回旋は、原紙の「回旋」を方向別に分割したアプリ追加項目です（仕様指示に基づく）。',options:[S('ant','前傾','tilt'),S('post','後傾','tilt'),S('up_r','右挙上','elev'),S('up_l','左挙上','elev'),A('rot_r','右回旋','rot'),A('rot_l','左回旋','rot')]},
+{id:'hip',no:10,ja:'股関節',en:'Hip joint',bilateral:true,plane:'水平面・前額面',options:[S('ir','内旋','rot'),S('er','外旋','rot'),S('add','内転','add'),S('abd','外転','add'),NORMAL]},
+{id:'knee',no:11,ja:'膝',en:'Knee',bilateral:true,plane:'前額面・矢状面',options:[S('valgus','外反','align'),S('varus','内反','align'),S('hyper','過伸展'),NORMAL]},
+{id:'ankle',no:12,ja:'足根',en:'Ankle',bilateral:true,plane:'矢状面・前額面',note:'足根には原紙に「異常なし」の欄がないため、3状態管理（未評価／評価済／判断不能）はアプリ側の追加仕様です。',options:[S('dorsi','背屈位','sag'),S('plantar','底屈位','sag'),S('inv','内反','front'),S('ever','外反','front')]},
+{id:'subtalar',no:13,ja:'距骨下関節',en:'Subtalar joint',bilateral:true,plane:'前額面（回内・回外）',options:[S('pron','回内','rot'),S('sup','回外','rot'),NORMAL]},
+{id:'arch',no:14,ja:'足アーチ',en:'Arch',bilateral:true,plane:'矢状面・水平面（アーチ構造）',note:'原紙・v1.1.2の表記は「横低下」です。仕様の実装リストに従い「横アーチ低下」と表示しています。',options:[S('low','低下','height'),S('high','高位','height'),S('trans_low','横アーチ低下'),NORMAL]}
+];
+const catById=id=>CATEGORIES.find(c=>c.id===id);
+const optLabel=(cat,oid)=>(cat.options.find(o=>o.id===oid)||{}).label||oid;
+function optionsConflict(cat,a,b){if(a===b)return false;if(a==='normal'||b==='normal')return true;const oa=cat.options.find(o=>o.id===a),ob=cat.options.find(o=>o.id===b);return !!(oa&&oa.group&&oa.group===ob.group)}
+const fkey=(catId,side)=>catId+':'+side;
+const emptyFinding=()=>({status:'unevaluated',selected:[],note:'',value:null,unit:''});
+function displayStatus(f){if(!f||f.status==='unevaluated')return '未評価';if(f.status==='unable')return '判断不能';if(f.selected.length===0)return '所見なし';if(f.selected.length===1&&f.selected[0]==='normal')return '異常なし';return '所見あり'}
+const hasFinding=f=>displayStatus(f)==='所見あり';
+const emptyTest=()=>({result:'not_done',optionValue:'',valueRight:null,valueLeft:null,unit:'',note:''});
+const testDone=t=>!!t&&(t.optionValue!==''||t.result!=='not_done'||t.valueRight!=null||t.valueLeft!=null);
+const verdictOf=t=>!t?'':t.optionValue!==''?t.optionValue:(t.result==='not_done'?'':t.result);
+function triggerMatches(findings,tr){const cat=catById(tr.cat);if(!cat)return[];const hits=[];
+  if(tr.asym&&cat.bilateral){const r=findings[fkey(tr.cat,'right')],l=findings[fkey(tr.cat,'left')];const rs=((r&&r.selected)||[]).slice().sort().join(','),ls=((l&&l.selected)||[]).slice().sort().join(',');if((hasFinding(r)||hasFinding(l))&&rs!==ls)hits.push(cat.ja+'の左右差');return hits}
+  const sides=cat.bilateral?['right','left']:['none'];
+  for(const side of sides){const f=findings[fkey(tr.cat,side)];if(!hasFinding(f))continue;for(const opt of f.selected){if(tr.opts.indexOf(opt)>=0){const sl=side==='right'?'右':side==='left'?'左':'';hits.push(cat.ja+sl+'「'+optLabel(cat,opt)+'」')}}}
+  return hits}
+function anyTriggerHits(findings,triggers){const out=[];for(const tr of triggers)out.push.apply(out,triggerMatches(findings,tr));return Array.from(new Set(out))}
+function activeTagCats(findings){const tags=new Set();for(const cat of CATEGORIES){const sides=cat.bilateral?['right','left']:['none'];for(const side of sides){const f=findings[fkey(cat.id,side)];if(!hasFinding(f))continue;if(f.selected.some(o=>o!=='normal'&&o!=='balanced')){tags.add(cat.id);break}}}return tags}
+/* ================= カタログ：追加テスト ================= */
+const APP_DETAIL='アプリ補完（出典未確認）';
+function T(seed){return Object.assign({targets:'未登録',startPosition:APP_DETAIL,examinerPosition:APP_DETAIL,stabilization:APP_DETAIL,direction:APP_DETAIL,measurement:'方法欄の手順で左右同条件で記録する。',normalRef:null,compensation:'未登録',interpPositive:'所見との関連を検討する材料になります（原因の確定ではありません）。',interpNegative:'この要因を主因とする説明は弱まります。',caution:'疼痛や危険徴候があれば中止してください。',references:'未登録',evidence:'unverified'},seed)}
+const MVP_TEST_ORDER=['stance','hip','trunk','extension','load','shoulder','scapula'];
+const TESTS=[
+T({id:'hipIR',name:'股関節内旋ROM（左右）',origin:'v112',kind:'bilateral',unit:'°',refLow:30,minDiff:11,minDiffBasis:'MDC95 検者間8〜11°（Langhout 2018）の上限側。検者が変わる運用を前提に保守値を採用（同一検者・同一プロトコルなら8°）',tags:['pelvis','hip','knee'],purpose:'股関節回旋の左右差と可動域制限を記録',method:'座位または腹臥位で股関節・膝関節を約90°屈曲し、骨盤を固定して左右の内旋角度を測る。測定姿勢を統一する。',compensation:'骨盤回旋・股関節外転・体幹側屈',reliability:'検者内ICC 0.88〜0.95／検者間ICC 0.75〜0.86（Prather 2010、Langhout 2018）。左右差の最小差は検者間を前提に11°',references:'Prather 2010 (PMID: 20970757)、Langhout 2018 (DOI: 10.2519/jospt.2018.7990)',diagram:'supine',triggers:[{cat:'pelvis',opts:['rot_r','rot_l']},{cat:'hip',opts:['ir','er']}]}),
+T({id:'hipER',name:'股関節外旋ROM（左右）',origin:'v112',kind:'bilateral',unit:'°',minDiff:11,minDiffBasis:'研究間のばらつきが大きい（検者間ICC 0.18〜0.77）ため保守値11°（MDC95 検者間8〜11°の上限側）',tags:['pelvis','hip'],purpose:'外旋可動域と左右差の確認',method:'座位または腹臥位で骨盤を固定し、左右の外旋角度を記録。内旋と同じ姿勢・器具で測定する。',compensation:'骨盤回旋・腰椎の代償',reliability:'検者内ICC 0.85〜0.95／検者間ICC 0.18（腹臥位）〜0.77と研究間で大きく異なる（Prather 2010、Langhout 2018）。体位・器具を固定し、最小差は保守値11°',references:'Prather 2010 (PMID: 20970757)、Langhout 2018 (DOI: 10.2519/jospt.2018.7990)',diagram:'supine',triggers:[{cat:'pelvis',opts:['rot_r','rot_l']},{cat:'hip',opts:['ir','er']}]}),
+T({id:'hipExt',name:'股関節伸展ROM（左右）',origin:'v112',kind:'bilateral',unit:'°',evidenceUse:'none',evidenceNote:'股関節伸展ROM（腹臥位ゴニオメーター）は検者間ICC 0.44と不良で、SEM／MDCの公表値がありません（Prather 2010）。数値を記録しても仮説・リリースの根拠には使いません。',tags:['pelvis','hip','lumbar'],purpose:'股関節伸展制限の確認',method:'腹臥位で骨盤を安定させ、腰椎過伸展を抑えて左右の股関節伸展角度を測る。',compensation:'骨盤前傾・腰椎伸展',reliability:'検者内ICC 0.83／検者間ICC 0.44と不良、SEM／MDCの公表値なし（Prather 2010）。エビデンスなし：判定根拠に使いません',references:'Prather 2010 (PMID: 20970757)',diagram:'prone',triggers:[{cat:'pelvis',opts:['ant','rot_r','rot_l']},{cat:'lumbar',opts:['hyper']}]}),
+T({id:'sitstand',name:'立位・座位の骨盤方向比較',origin:'v112',kind:'choice',evidenceUse:'none',evidenceNote:'立位と座位の骨盤回旋の比較観察は、この方法自体の検証研究がありません。記録は残りますが仮説の根拠には使いません。',choices:[{value:'座位で回旋が減少',label:'座位で回旋が減少'},{value:'座位でも同程度',label:'座位でも同程度'},{value:'座位で回旋が増加',label:'座位で回旋が増加'},{value:'判定不能',label:'判定不能'}],tags:['pelvis','weight','hip'],purpose:'立位荷重の寄与を探索',method:'同じ基準線で骨盤の水平面方向を立位と座位で比較。ASISの触診誤差と体幹回旋を考慮する。',compensation:'足位置・座面高さ・胸郭の向き',reliability:'検証研究なし（エビデンスなし：判定根拠に使いません）',diagram:'seated',triggers:[{cat:'pelvis',opts:['rot_r','rot_l','up_r','up_l','ant','post']}]}),
+T({id:'trunkrot',name:'胸椎回旋ROM（骨盤固定・左右）',origin:'v112',kind:'bilateral',unit:'°',minDiff:6,minDiffBasis:'胸椎回旋（骨盤固定・傾斜計）のMDC 2.8〜6.3°（Johnson 2012）の上限側。観察による胸郭−骨盤の相対回旋とは別物として扱います',tags:['pelvis','thorax','lumbar','neck'],purpose:'体幹回旋の左右差を確認',method:'座位で骨盤を固定し、胸郭の左右回旋を傾斜計等で同一条件で測定する（胸椎回旋の測定）。疼痛がある場合は無理に回さない。観察だけで相対回旋を判定するテストとは別物です。',compensation:'骨盤の追従・肩甲帯の代償',reliability:'骨盤固定下の胸椎回旋・傾斜計測定で検者間ICC 0.85〜0.94、MDC 2.8〜6.3°（Johnson 2012）。最小差6°',references:'Johnson 2012 (PMID: 22488230)',diagram:'seated',triggers:[{cat:'pelvis',opts:['rot_r','rot_l']},{cat:'thorax',opts:['rot_r','rot_l']},{cat:'lumbar',opts:['rot_r','rot_l']}]}),
+T({id:'loadobs',name:'左右荷重・足圧の観察',origin:'v112',kind:'choice',choices:[{value:'右優位',label:'右優位'},{value:'左優位',label:'左優位'},{value:'ほぼ均等',label:'ほぼ均等'},{value:'判定不能',label:'判定不能'}],tags:['weight','pelvis','knee','ankle','subtalar','arch'],purpose:'立位荷重パターンの確認',method:'自然立位で左右の荷重傾向を確認。可能なら左右独立の体重計等を使用し、測定条件を記録。',compensation:'足幅・視線・支持物',reliability:'目視だけの荷重推定には限界',diagram:'standing',triggers:[{cat:'weight',opts:['right','left','forefoot','heel']}]}),
+T({id:'ankleDF',name:'荷重位足関節背屈（左右）',origin:'v112',kind:'bilateral',unit:'cm',refLow:10,minDiff:2,minDiffBasis:'knee-to-wallの系統的レビュー（Powden 2015）のMDC 検者間1.6cm／検者内1.9cmを切り上げた保守値2.0cm',tags:['ankle','subtalar','arch','knee','pelvis'],purpose:'下肢の可動域差を確認',method:'壁への膝タッチなど同じ測定法で左右比較。踵を浮かさず、足部の代償を確認する。',compensation:'踵離地・過度な回内',reliability:'検者間ICC 0.80〜0.99（系統的レビューで強いエビデンス）、MDC 検者間1.6cm／検者内1.9cm（Powden 2015）。最小差2.0cm',references:'Powden 2015 (PMID: 25704110)、Konor 2012 (PMID: 22666642)',normalRef:'参考値（一般値）：10cm前後が目安として紹介されることがあるが、方法・対象で変動する（エビデンス未確認）。',diagram:'standing',triggers:[{cat:'ankle',opts:['dorsi','plantar']},{cat:'arch',opts:['low']},{cat:'knee',opts:['valgus']}]}),
+T({id:'singleleg',name:'片脚立位の骨盤・下肢観察',origin:'v112',kind:'choice',choices:[{value:'右支持で変化大',label:'右支持で変化大'},{value:'左支持で変化大',label:'左支持で変化大'},{value:'左右とも変化',label:'左右とも変化'},{value:'明確な差なし',label:'明確な差なし'},{value:'判定不能',label:'判定不能'}],tags:['pelvis','hip','knee','ankle','girdle'],purpose:'荷重時の動作制御を観察',method:'安全な支持環境で左右各10秒程度の片脚立位を観察し、骨盤の傾きと体幹代償を記録。',compensation:'支持物・視線・疼痛・転倒リスク',reliability:'観察から特定筋の弱化は断定できない',diagram:'standing',triggers:[{cat:'pelvis',opts:['up_r','up_l']},{cat:'knee',opts:['valgus']}]}),
+T({id:'scap',name:'肩甲骨の挙上・上方回旋観察',origin:'v112',kind:'choice',choices:[{value:'右で変化大',label:'右で変化大'},{value:'左で変化大',label:'左で変化大'},{value:'両側',label:'両側'},{value:'差なし',label:'差なし'},{value:'判定不能',label:'判定不能'}],tags:['girdle','shoulder','thorax','neck'],purpose:'肩甲骨運動の左右差と代償を確認',method:'上肢挙上時の肩甲骨運動を前額面・矢状面から観察。肩関節可動域と疼痛も記録。',compensation:'体幹伸展・肩すくめ・観察者間差',reliability:'視診単独での精密分類には限界',diagram:'standing',triggers:[{cat:'girdle',opts:['elev','depr','wing','ant'],asym:true},{cat:'girdle',opts:['wing']}]}),
+T({id:'cervrot',name:'頸部回旋ROM（左右）',origin:'v112',kind:'bilateral',unit:'°',minDiff:7,minDiffBasis:'CROMのMDC90 3.6〜6.5°（Audette 2010）・MDC95 5.8〜6.8°に基づく7°（CROM使用時）',tags:['head','neck','girdle'],purpose:'頸部回旋の左右差を確認',method:'座位で胸郭を安定させ、疼痛のない範囲で左右の自動回旋角度を測定。',compensation:'胸郭回旋・頭部側屈',reliability:'CROMで検者内ICC 0.90〜0.93／検者間ICC 0.82〜0.92、MDC90 3.6〜6.5°（Audette 2010、Youdas 1991）。最小差7°はCROM使用時の値',references:'Audette 2010 (PMID: 20436238)、Youdas 1991',diagram:'seated',triggers:[{cat:'head',opts:['rot_r','rot_l','tilt_r','tilt_l']},{cat:'neck',opts:['rot_r','rot_l','tilt_r','tilt_l']}]}),
+T({id:'breathobs',name:'呼吸時胸郭運動の観察',origin:'v112',kind:'choice',evidenceUse:'none',evidenceNote:'呼吸パターンの観察は患者集団での信頼性データがなく（模擬パターンでの研究のみ）、特に胸郭運動の左右差の観察は検証研究がありません。記録は残りますが仮説の根拠には使いません。',choices:[{value:'左右差あり',label:'左右差あり'},{value:'浅い傾向',label:'浅い傾向'},{value:'目立つ差なし',label:'目立つ差なし'},{value:'判定不能',label:'判定不能'}],tags:['breath','thorax'],purpose:'呼吸パターンと左右差の記録',method:'安静呼吸時の胸郭・腹部の運動を観察。呼吸困難などがあれば運動評価より医療相談を優先。',compensation:'意識的な呼吸変更・姿勢の影響',reliability:'患者集団での信頼性データなし。左右差の観察は検証研究なし（エビデンスなし：判定根拠に使いません）。観察単独で呼吸機能障害は診断できない',diagram:'breath',triggers:[{cat:'breath',opts:['thoracic','shallow','asymmetry']},{cat:'thorax',opts:['flare']}]}),
+T({id:'squat',name:'スクワット時の下肢アライメント',origin:'v112',kind:'choice',choices:[{value:'右側の変化大',label:'右側の変化大'},{value:'左側の変化大',label:'左側の変化大'},{value:'両側',label:'両側'},{value:'目立つ差なし',label:'目立つ差なし'},{value:'判定不能',label:'判定不能'}],tags:['knee','hip','pelvis','ankle','subtalar','arch'],purpose:'動作中の膝・股関節・足部の協調性を観察',method:'痛みのない範囲で自重スクワットを数回行い、正面・側面から観察。',compensation:'足幅・速度・深さ・疼痛',reliability:'動作所見のみで原因筋は特定できない',diagram:'standing',triggers:[{cat:'knee',opts:['valgus','varus']},{cat:'arch',opts:['low']},{cat:'subtalar',opts:['pron']}]}),
+T({id:'stance',name:'立位・座位での所見比較',origin:'mvp',kind:'choice',evidenceUse:'none',evidenceNote:'立位と座位の骨盤回旋の比較観察は、この方法自体の検証研究がありません。記録は残りますが仮説の根拠には使いません。',choices:[{value:'reduced',label:'座位で左右差が減少'},{value:'same',label:'座位でも左右差が残る'},{value:'unknown',label:'判定困難'}],tags:['pelvis','weight'],purpose:'立位で見られる骨盤の左右差・回旋が、荷重条件を外した座位でも残るかを確認し、立位荷重・下肢条件の影響と体幹・骨盤自体の要因を切り分ける。',targets:'骨盤帯、股関節、足部、胸郭',startPosition:'自然立位（足幅とつま先角度を揃える）。次に椅子座位（足底を床に接地、股関節・膝関節約90°）。',examinerPosition:'被検者の後方および側方から骨盤を観察できる位置。',stabilization:'固定は行わない。立位・座位とも足部の向きと胸郭の向きを正面に揃える。',direction:'荷重条件の変更（立位→座位）による所見の変化を観察する。',method:'立位と座位で足部・胸郭の向きを揃え、骨盤の向きを観察。ASISの前後位置を左右で確認。',measurement:'ASISの前後位置の左右差と骨盤の向きの変化を、立位と座位で比較して記録する。',compensation:'体幹の側屈や胸郭の回旋で骨盤の向きを代償して見せる場合があるため、胸郭の向きを先に揃える。',interpPositive:'座位で左右差が減少すれば、立位荷重・下肢条件が所見に関与している可能性を示す（原因の確定ではない）。',interpNegative:'座位でも左右差が残れば、荷重条件だけでは説明しにくく、体幹・骨盤・股関節側の追加評価が必要になる。',reliability:UNVERIFIED,caution:'椅子の高さや足底接地の有無で結果が変わるため、条件を記録し再評価時も揃える。',references:UNVERIFIED,diagram:'seated',triggers:[{cat:'pelvis',opts:['rot_r','rot_l','up_r','up_l','ant','post']}]}),
+T({id:'hip',name:'股関節内旋ROM 左右比較',origin:'mvp',kind:'choice',choices:[{value:'right',label:'右側が制限'},{value:'left',label:'左側が制限'},{value:'both',label:'両側が制限'},{value:'normal',label:'明らかな制限なし'},{value:'unknown',label:'判定困難'}],tags:['pelvis','hip'],purpose:'股関節内旋可動域の左右差を確認し、骨盤回旋所見との関連を検討する。',targets:'股関節（関節包・深層外旋筋群・大腿骨頸部の形状など複数の要因がありうる）',startPosition:'仰臥位または座位で股関節屈曲90°。',examinerPosition:'被検者の側方、下腿を操作できる位置。',stabilization:'骨盤の代償（回旋・側方傾斜）を防ぐため、反対側のASIS付近を軽く固定する。',direction:'下腿を外側へ倒す方向（股関節内旋方向）へ他動的・自動介助で動かす。',method:'仰臥位または座位で股関節屈曲90°。骨盤の代償を防ぎ、左右同条件で内旋角度を測る。',measurement:'ゴニオメーターまたは傾斜計で内旋角度を左右測定し、角度と左右差を記録する。',normalRef:'参考値（一般値）：股関節屈曲位の内旋は約30〜45°とされることが多いが、測定肢位・方法で変動する（エビデンス未確認）。',compensation:'骨盤の回旋・挙上、体幹の側屈が起きると角度が大きく見える。代償が出た時点で測定を止める。',interpPositive:'制限側がある場合、その側の股関節回旋可動域の制限が候補に上がる。ただし骨盤回旋の原因とは未確定であり、他のテストと併せて判断する。',interpNegative:'明らかな制限がなければ、股関節内旋制限を主因とする説明は弱まる。',reliability:UNVERIFIED,caution:'股関節の痛みやつまり感がある場合は無理に最終域まで動かさない。人工股関節術後などは禁忌事項を事前に確認する。',references:UNVERIFIED,diagram:'supine',triggers:[{cat:'pelvis',opts:['rot_r','rot_l']},{cat:'hip',opts:['ir','er']}]}),
+T({id:'trunk',name:'胸郭・骨盤の相対回旋',origin:'mvp',kind:'choice',evidenceUse:'none',evidenceNote:'胸郭−骨盤の相対回旋という構成概念での信頼性研究はありません。観察の記録は残りますが仮説の根拠には使いません（骨盤固定で角度を測る「胸椎回旋ROM（骨盤固定・左右）」とは別物です）。',choices:[{value:'asym',label:'左右差あり'},{value:'normal',label:'左右差は小さい'},{value:'unknown',label:'判定困難'}],tags:['pelvis','thorax','lumbar','girdle'],purpose:'胸郭と骨盤の間で生じる相対回旋の左右差を確認し、体幹の協調性との関連を検討する。',targets:'胸郭、腰椎、骨盤帯（体幹回旋の分節的な動き）',startPosition:'椅子座位、足底接地、骨盤ニュートラル。',examinerPosition:'被検者の後方から両肩と骨盤を観察できる位置。',stabilization:'第一段階では骨盤を両手で固定、第二段階では胸郭を固定する。',direction:'胸郭の左右回旋、次に骨盤の左右への動き。',method:'座位で骨盤を固定し、胸郭を左右に回旋。次に胸郭を固定して骨盤を左右へ動かし、左右差と代償を記録。',measurement:'回旋の大きさの左右差、代償動作の有無、被検者の主観的な動かしやすさを記録する。',compensation:'体幹側屈や肩のすくみで回旋を代償する場合がある。',interpPositive:'左右差があれば、胸郭・骨盤の協調性に関する仮説の支持材料になる。',interpNegative:'左右差が小さければ、相対回旋の問題を主因とする説明は弱まる。',reliability:UNVERIFIED,caution:'腰部に強い痛みが出る場合は中止する。回旋は痛みのない範囲で行う。',references:UNVERIFIED,diagram:'seated',triggers:[{cat:'pelvis',opts:['rot_r','rot_l']},{cat:'thorax',opts:['rot_r','rot_l']},{cat:'lumbar',opts:['rot_r','rot_l']}]}),
+T({id:'extension',name:'股関節伸展ROM 左右比較',origin:'mvp',kind:'choice',choices:[{value:'right',label:'右側が制限'},{value:'left',label:'左側が制限'},{value:'both',label:'両側が制限'},{value:'normal',label:'明らかな制限なし'},{value:'unknown',label:'判定困難'}],tags:['pelvis','hip','lumbar'],purpose:'股関節伸展可動域の左右差を確認し、骨盤前傾・回旋所見との関連を検討する。',targets:'股関節、腸腰筋・大腿直筋など股関節屈筋群（解剖学的作用と実際の制限は区別する）',startPosition:'修正トーマステスト肢位：ベッド端に座り片膝を抱えた仰臥位、または腹臥位。',examinerPosition:'被検者の側方、大腿と骨盤を観察できる位置。',stabilization:'腰椎伸展・骨盤前傾の代償を抑えるため、反対側の股関節を十分に屈曲させ腰椎をベッドに接地させる。',direction:'大腿を下方（伸展方向）へ下ろす。',method:'修正トーマステスト等を使用。腰椎伸展・骨盤前傾の代償を抑え、左右同条件で比較。',measurement:'大腿と水平面のなす角度、または大腿がベッド面へ届くかを左右で比較し記録する。',normalRef:'参考値（一般値）：大腿が水平以下まで下がることが目安とされるが、測定法により異なる（エビデンス未確認）。',compensation:'腰椎伸展と骨盤前傾で伸展を代償する。膝の屈曲が強い場合は大腿直筋の影響も考慮する。',interpPositive:'制限側がある場合、その側の股関節伸展可動域の制限が候補に上がる（原因の確定ではない）。',interpNegative:'明らかな制限がなければ、伸展制限を主因とする説明は弱まる。',reliability:UNVERIFIED,caution:'腰痛が増悪する場合は中止する。股関節術後・妊娠中などは実施可否を事前に確認する。',references:UNVERIFIED,diagram:'side',triggers:[{cat:'pelvis',opts:['rot_r','rot_l','ant']},{cat:'lumbar',opts:['hyper']}]}),
+T({id:'load',name:'立位荷重と足部方向',origin:'mvp',kind:'choice',choices:[{value:'change',label:'荷重・足部条件で所見が変化'},{value:'same',label:'条件を変えても所見が不変'},{value:'unknown',label:'判定困難'}],tags:['pelvis','weight','arch','subtalar'],purpose:'荷重のかけ方や足部の向きを変えたときに骨盤所見が変化するかを確認し、荷重パターン・足部条件との関連を検討する。',targets:'足部、距骨下関節、足アーチ、骨盤帯、荷重感覚',startPosition:'自然立位。次に足幅とつま先角度を揃えた立位。',examinerPosition:'被検者の後方から骨盤と足部を同時に観察できる位置。',stabilization:'固定なし。条件変更は足幅・つま先角度・荷重位置のみ。',direction:'条件を変えた状態での骨盤の向きの変化を観察する。',method:'左右の荷重感覚・足部の向き・骨盤回旋の変化を観察。足幅とつま先角度を揃えた条件でも比較。',measurement:'条件ごとの骨盤の向きの変化の有無と、被検者の荷重感覚の訴えを記録する。',compensation:'上半身の傾きで荷重を変えたように見せる場合があるため、胸郭の向きも同時に確認する。',interpPositive:'条件で所見が変化すれば、立位荷重・下肢条件の影響が候補に上がる。',interpNegative:'条件を変えても不変であれば、荷重条件以外の要因の比重が上がる。',reliability:UNVERIFIED,caution:'バランスが不安定な被検者は支持物を用意し、転倒に注意する。',references:UNVERIFIED,diagram:'standing',triggers:[{cat:'pelvis',opts:['rot_r','rot_l','up_r','up_l']},{cat:'weight',opts:['right','left','forefoot','heel']}]}),
+T({id:'shoulder',name:'肩峰の高さと胸郭位置',origin:'mvp',kind:'choice',choices:[{value:'trunk',label:'胸郭位置と連動して変化'},{value:'same',label:'胸郭を整えても左右差が残る'},{value:'unknown',label:'判定困難'}],tags:['girdle'],purpose:'肩峰の高さの左右差が胸郭位置と連動するかを確認し、体幹由来か局所由来かの切り分け材料にする。',targets:'肩峰、胸郭、骨盤帯',startPosition:'自然立位、前方を注視。',examinerPosition:'被検者の前方、前額面で両肩峰を比較できる位置。',stabilization:'まず自然立位で観察し、次に胸郭の側屈・回旋と骨盤の傾斜を整えて再観察する。',direction:'胸郭位置の修正に伴う肩峰高の変化を観察する。',method:'前額面で左右肩峰の高さを観察。胸郭の側屈・回旋や骨盤の傾斜も同時に記録。',measurement:'胸郭を整える前後での肩峰の高さの左右差の変化を記録する。',compensation:'頭部の側屈や肩のすくみ動作で高さが変わるため、頭部位置も揃える。',interpPositive:'胸郭位置と連動して変化すれば、胸郭の位置・体幹運動との関連が候補に上がる。',interpNegative:'整えても左右差が残れば、局所的な肩甲帯・肩関節の要因の比重が上がる。',reliability:UNVERIFIED,caution:'肩の痛みがある場合は挙上動作を無理に行わない。',references:UNVERIFIED,diagram:'standing',triggers:[{cat:'girdle',opts:['elev','depr'],asym:true}]}),
+T({id:'scapula',name:'肩甲骨の挙上・上方回旋',origin:'mvp',kind:'choice',choices:[{value:'asym',label:'動作で左右差あり'},{value:'normal',label:'動作の左右差は小さい'},{value:'unknown',label:'判定困難'}],tags:['girdle'],purpose:'肩の動作に伴う肩甲骨の動きの左右差を確認し、肩甲帯の運動制御との関連を検討する。',targets:'肩甲骨（内側縁・下角）、肩関節',startPosition:'立位または座位、上肢下垂。',examinerPosition:'被検者の後方、両肩甲骨を観察できる位置。',stabilization:'体幹が側屈・回旋しないよう注意して観察する。',direction:'肩の屈曲・外転に伴う肩甲骨の上方回旋を観察する。',method:'肩甲骨内側縁・下角を観察。肩の屈曲・外転時の動きと代償を左右比較。',measurement:'動作時の肩甲骨の動き出しのタイミング、翼状の出現、左右差を記録する。',compensation:'体幹側屈や肩のすくみで挙上を代償する場合がある。',interpPositive:'動作で左右差があれば、肩甲帯の動作左右差に関する仮説の支持材料になる。',interpNegative:'左右差が小さければ、肩甲帯の動作要因を主因とする説明は弱まる。',reliability:UNVERIFIED,caution:'肩の痛み・脱臼既往がある場合は可動範囲を制限し、無理な挙上を行わない。',references:UNVERIFIED,diagram:'standing',triggers:[{cat:'girdle',opts:['elev','depr','wing','ant'],asym:true},{cat:'girdle',opts:['wing']}]}),
+T({id:'weight_scale',name:'荷重分布の評価（二台の体重計）',origin:'app',kind:'judge',unit:'kg',numeric:true,evidenceUse:'none',evidenceNote:'二台の体重計の測定自体は高信頼（ICC 0.94〜0.97）ですが、左右比の自然変動（変動係数5〜7%）が大きく、異常とみなす閾値（MDC）は公表されていません。数値は記録できますが、左右差は仮説の根拠には使いません。',tags:['weight','pelvis'],purpose:'左右の荷重量を数値で確認し、荷重足の所見と一致するかを検証する。',method:'二台の体重計に左右の足を一台ずつ乗せた自然立位で、左右の表示と合計に対する左右比を記録する。条件を揃えて2〜3回測定する。',reliability:UNVERIFIED,references:UNVERIFIED,diagram:'standing',triggers:[{cat:'weight',opts:['right','left']},{cat:'pelvis',opts:['up_r','up_l','rot_r','rot_l']}]}),
+T({id:'foot_align',name:'足部アライメントの評価（アーチ・踵骨）',origin:'app',kind:'judge',tags:['arch','subtalar','ankle','pelvis'],purpose:'荷重時のアーチ高と踵骨の向きを観察し、足部所見と下肢・骨盤所見の関連材料にする。',method:'後方から踵骨の傾き、内側縦アーチの低下、つま先の向きを左右比較し、骨盤・膝の所見と並べて記録する。',reliability:UNVERIFIED,references:UNVERIFIED,diagram:'standing',triggers:[{cat:'arch',opts:['low','high','trans_low']},{cat:'subtalar',opts:['pron','sup']},{cat:'ankle',opts:['inv','ever']}]}),
+T({id:'thomas',name:'トーマステスト（股関節屈筋群の伸張性）',origin:'app',kind:'judge',unit:'°',minDiff:6,minDiffBasis:'股関節伸展角（骨盤統制＋傾斜計）のSEM約2°（Clapis 2008）からの換算目安6°（原著のMDC報告なし）。pass/fail判定（kappa 検者内0.40／検者間0.33、Peeler 2008）は根拠にしません',tags:['pelvis','lumbar'],purpose:'股関節屈筋群の伸張性を確認し、骨盤前傾・腰椎前弯所見との関連材料にする。',method:'ベッド端で反対側の股関節を十分屈曲させ腰椎を接地させた仰臥位で、検査側の大腿がベッド面まで下がるか、膝屈曲の変化も併せて観察する。骨盤傾斜を統制し傾斜計等で股関節伸展角（°）を測った場合は、左右の角度も数値欄に記録してください（角度方式のみ仮説の根拠に使います。pass/failだけの結果は根拠にしません）。',reliability:'角度方式（骨盤統制＋傾斜計／ゴニオメーター）：検者間ICC 0.89〜0.92（Clapis 2008）。pass/fail判定はkappa 検者内0.40／検者間0.33と不良（Peeler 2008）のため根拠にしません',references:'Clapis 2008 (DOI: 10.1080/09593980701378256)、Peeler 2008 (PMID: 18833309)、Vigotsky 2016 (PMID: 27602291)',diagram:'side',triggers:[{cat:'pelvis',opts:['ant']},{cat:'lumbar',opts:['hyper']}]}),
+T({id:'slr',name:'SLR（ハムストリングス伸張性）',origin:'app',kind:'judge',unit:'°',numeric:true,minDiff:11,minDiffBasis:'SLR角度のMDD95 約11°（検者間SEM 3.97°、デジタル傾斜計）',tags:['pelvis','lumbar'],purpose:'ハムストリングスの伸張性を確認し、骨盤後傾・腰椎前弯減少所見との関連材料にする。',method:'仰臥位で骨盤の後傾が出ない範囲で膝伸展のまま下肢を挙上し、代償が出る直前の角度を左右で測る。放散痛・しびれが出たら中止する。',normalRef:'参考値（一般値）：70°前後が目安として紹介されることがあるが、対象により大きく異なる（エビデンス未確認）。',reliability:'デジタル傾斜計で検者間ICC 0.929／再テストICC 0.944、検者間SEM 3.97°、MDD95 11.0°。最小差11°',references:'Front Physiol 2022 (DOI: 10.3389/fphys.2022.911240)',diagram:'supine',triggers:[{cat:'pelvis',opts:['post']},{cat:'lumbar',opts:['hypo']}]}),
+T({id:'faber',name:'FABERテスト（股関節・仙腸関節の複合評価）',origin:'app',kind:'judge',unit:'cm',numeric:true,minDiff:4,minDiffBasis:'FABER距離の左右差（symmetry）自体のMDC 4.0cm（Bagwell 2016）',tags:['hip','pelvis'],purpose:'股関節の屈曲・外転・外旋の複合可動性と症状の有無を確認する。',method:'仰臥位で検査側の踵を反対側の膝上に乗せ（4の字）、反対側ASISを固定して膝をベッド方向へ軽く下ろす。膝とベッド面の距離の左右差と痛みの部位を分けて記録する。',reliability:'距離測定の検者間ICC 0.67〜0.68、左右差自体のMDC 4.0cm（Bagwell 2016）。最小差4.0cm（左右差）',references:'Bagwell 2016 (PMID: 27999724)',diagram:'supine',triggers:[{cat:'hip',opts:['ir','er','add','abd']},{cat:'pelvis',opts:['rot_r','rot_l']}]}),
+T({id:'trendelenburg',name:'片脚立位（トレンデレンブルグ徴候の観察）',origin:'app',kind:'judge',unit:'秒',evidenceUse:'none',evidenceNote:'トレンデレンブルグ徴候の目視判定は、健常者では3次元動作解析との一致がkappa 0.22〜0.25と低く、外転筋力との関連も示されていません。記録は残りますが仮説の根拠には使いません。',tags:['pelvis','knee','weight'],purpose:'片脚立位での骨盤の保持を確認し、股関節外転筋群の筋機能との関連材料にする。',method:'支持物を用意し、左右それぞれ片脚立位で骨盤の低下・体幹の代償・保持時間を記録する。体幹を支持脚側へ傾ける代償でも骨盤は保たれるため、体幹の傾きも記録する。',reliability:'目視判定は健常者で3次元解析とkappa 0.22〜0.25（McCarney 2020）。エビデンスなし：判定根拠に使いません',references:'McCarney 2020 (DOI: 10.1186/s12998-020-00344-3)、Bird 2001 (PMID: 11592379)',diagram:'standing',triggers:[{cat:'pelvis',opts:['up_r','up_l']},{cat:'knee',opts:['valgus']}]}),
+T({id:'cervical_rom',name:'頸部ROM左右比較',origin:'app',kind:'judge',unit:'°',tags:['head','neck'],purpose:'頸部の側屈・回旋可動域の左右差を確認し、頭部・頸部所見との関連材料にする。',method:'椅子座位で肩甲帯が動かないよう注意し、側屈（左右）・回旋（左右）を痛みのない範囲で動かして角度の目安と代償を記録する。めまい・しびれが出たら直ちに中止する。',reliability:UNVERIFIED,references:UNVERIFIED,diagram:'seated',triggers:[{cat:'head',opts:['tilt_r','tilt_l','rot_r','rot_l']},{cat:'neck',opts:['tilt_r','tilt_l','rot_r','rot_l','hyper','hypo']}]}),
+T({id:'shoulder_rom',name:'肩関節ROM（屈曲・外旋）左右比較',origin:'app',kind:'judge',unit:'°',tags:['shoulder','girdle'],purpose:'肩関節の可動域の左右差を確認し、肩関節・肩甲帯所見との関連材料にする。',method:'立位または座位で屈曲と外旋（肘屈曲90°・上腕を体側）を左右同条件で動かし、角度の目安と肩甲骨の代償を記録する。',reliability:UNVERIFIED,references:UNVERIFIED,diagram:'standing',triggers:[{cat:'shoulder',opts:['ir','er','ant_disp']},{cat:'girdle',opts:['ant','wing','elev']}]}),
+T({id:'breathing_obs',name:'呼吸パターンの観察（胸腹の動き）',origin:'app',kind:'judge',evidenceUse:'none',evidenceNote:'呼吸パターンの観察は患者集団での信頼性データがなく（模擬パターンでの研究のみ）、特に胸郭運動の左右差の観察は検証研究がありません。記録は残りますが仮説の根拠には使いません。',tags:['breath','thorax'],purpose:'安静呼吸での胸部と腹部の動きの配分と左右差を確認し、呼吸・胸郭所見との関連材料にする。',method:'仰臥位または立位で胸部と腹部に手を当て、どちらが先に・大きく動くか、浅さ、左右差を記録する。意識すると変わるため無意識の観察を優先する。',reliability:UNVERIFIED,references:UNVERIFIED,diagram:'breath',triggers:[{cat:'breath',opts:['thoracic','shallow','asymmetry']},{cat:'thorax',opts:['flare']}]})
+];
+const testById=id=>TESTS.find(t=>t.id===id);
+function activeHypotheses(findings){return HYPOTHESES.filter(h=>anyTriggerHits(findings,h.findingTriggers).length>0)}
+function suggestedTests(findings,tests){const tags=activeTagCats(findings);const ruleUse={};for(const h of activeHypotheses(findings)){const ids=new Set();for(const r of (h.rules||[]))ids.add(r.testId);for(const r of (h.requiresAll||[]))ids.add(r.testId);for(const tid of ids){if(!ruleUse[tid])ruleUse[tid]=[];if(ruleUse[tid].indexOf(h)<0)ruleUse[tid].push(h)}}
+  const scored=TESTS.map((test,idx)=>{const matched=test.tags.filter(t=>tags.has(t));const reasons=anyTriggerHits(findings,test.triggers);const useHyps=ruleUse[test.id]||[];for(const h of useHyps)reasons.push(isNoEvidenceTest(test)?'記録用（エビデンスなし：仮説の判定には使われません）':'仮説「'+h.title+'」の検証に使えます');const mi=MVP_TEST_ORDER.indexOf(test.id);return{test,reasons:Array.from(new Set(reasons)),score:matched.length,ruleCount:useHyps.length,mvpIdx:mi===-1?100:mi,idx,done:testDone(tests[test.id])}}).filter(s=>s.score>0||s.reasons.length>0||s.ruleCount>0);
+  const tier=s=>s.ruleCount>=2?0:(s.ruleCount===1?1:2);
+  scored.sort((a,b)=>(Number(a.done)-Number(b.done))||(tier(a)-tier(b))||(b.ruleCount-a.ruleCount)||(b.score-a.score)||(a.mvpIdx-b.mvpIdx)||(a.idx-b.idx));return scored}
+function diagramSVG(kind){const s='fill="none" stroke="#7fd4e3" stroke-width="2.4" stroke-linecap="round"';const ground='<line x1="6" y1="86" x2="114" y2="86" stroke="#3d5878" stroke-width="2"/>';let body='';
+  if(kind==='seated')body='<circle cx="52" cy="22" r="8" '+s+'/><path d="M52 30 L52 56 L76 56 L76 82" '+s+'/><path d="M52 40 L72 46" '+s+'/><line x1="30" y1="56" x2="80" y2="56" stroke="#3d5878" stroke-width="3"/>';
+  else if(kind==='supine')body='<circle cx="20" cy="74" r="8" '+s+'/><path d="M28 78 L70 78 L96 60" '+s+'/>';
+  else if(kind==='prone')body='<circle cx="20" cy="74" r="8" '+s+'/><path d="M28 78 L100 78" '+s+'/>';
+  else if(kind==='side')body='<circle cx="24" cy="66" r="8" '+s+'/><path d="M32 72 L66 78 L96 84" '+s+'/><path d="M40 60 L40 84" '+s+' stroke-dasharray="3 3"/>';
+  else if(kind==='breath')body='<circle cx="60" cy="16" r="8" '+s+'/><path d="M60 24 L60 58 L48 84 M60 58 L72 84 M60 36 L40 46 M60 36 L80 46" '+s+'/><path d="M38 30 q-6 8 0 16 M82 30 q6 8 0 16" '+s+' stroke-dasharray="3 3"/>';
+  else body='<circle cx="60" cy="14" r="8" '+s+'/><path d="M60 22 L60 52 L50 84 M60 52 L70 84 M60 32 L44 46 M60 32 L76 46" '+s+'/>';
+  return '<svg viewBox="0 0 120 92" role="img" aria-label="開始肢位の図解" style="width:100%;max-width:180px;height:auto">'+ground+body+'</svg>'}
+/* ================= カタログ：仮説（8分類） ================= */
+const HYP_CLASSES=[{id:'rom',label:'関節可動域制限',plain:'関節の動き'},{id:'extensibility',label:'筋・軟部組織の伸張性',plain:'筋肉の伸び'},{id:'strength',label:'筋力・筋機能',plain:'筋力'},{id:'motor_control',label:'運動制御',plain:'動きのコントロール'},{id:'thoraco_pelvic',label:'胸郭・骨盤の協調性',plain:'胸郭と骨盤の連携'},{id:'loading',label:'荷重パターン',plain:'荷重のかけ方'},{id:'foot_chain',label:'足部・下肢からの影響',plain:'足・下肢の影響'},{id:'measurement',label:'測定誤差・姿勢の個人差',plain:'個人差・測り方'}];
+const HYP_LEVEL_LABEL={clue:'手がかりあり',mixed:'支持と反証が混在',unknown:'まだ不明',unlikely:'当てはまらなそう'};
+const hypClass=id=>(HYP_CLASSES.find(c=>c.id===id)||{}).label||id;
+const HYPOTHESES=[
+{id:'hipmob',cls:'rom',title:'股関節の回旋・伸展可動域の制約',origin:'v112',note:'股関節の関節性・軟部組織性の要因を区別するには追加評価が必要です。骨盤回旋の原因とは未確定です（MVPの表現を保持）。腹臥位の股関節伸展ROM（hipExt）の数値はエビデンスなしのため手がかりに数えません。',findingTriggers:[{cat:'pelvis',opts:['rot_r','rot_l','ant']},{cat:'hip',opts:['ir','er']}],rules:[{testId:'hip',support:['right','left','both'],refute:['normal'],supportText:'股関節内旋ROMに制限を認めた（骨盤回旋の原因とは未確定）',refuteText:'股関節内旋ROMに明らかな制限はなかった'},{testId:'extension',support:['right','left','both'],refute:['normal'],supportText:'股関節伸展ROMに制限を認めた',refuteText:'股関節伸展ROMに明らかな制限はなかった'},{testId:'faber',support:['positive'],refute:['negative'],supportText:'FABERで左右差・症状がみられた',refuteText:'FABERで左右差は小さかった'}],relatedTests:['hipIR','hipER','hipExt','hip','extension','faber']},
+{id:'loading',cls:'loading',title:'立位荷重パターンの影響',origin:'v112',note:'条件を変えると所見が変わることは、荷重条件の関与を示す材料であり、原因の確定ではありません。立位・座位の比較観察と二台の体重計の左右差はエビデンスなしのため根拠に数えません。',findingTriggers:[{cat:'pelvis',opts:['rot_r','rot_l','up_r','up_l']},{cat:'weight',opts:['right','left','forefoot','heel']}],rules:[{testId:'stance',support:['reduced'],refute:['same'],supportText:'座位で左右差が減少した',refuteText:'座位でも左右差が残った'},{testId:'sitstand',support:['座位で回旋が減少'],refute:['座位でも同程度'],supportText:'座位で回旋が減少した',refuteText:'座位でも同程度だった'},{testId:'load',support:['change'],refute:['same'],supportText:'荷重・足部条件の変更で所見が変化した',refuteText:'条件を変えても所見が不変だった'},{testId:'loadobs',support:['右優位','左優位'],refute:['ほぼ均等'],supportText:'荷重の左右偏位が観察された',refuteText:'荷重はほぼ均等だった'},{testId:'weight_scale',support:['positive'],refute:['negative'],supportText:'荷重量の数値でも偏位が確認できた',refuteText:'荷重量の数値では偏位が小さかった'}],relatedTests:['sitstand','loadobs','singleleg','stance','load','weight_scale']},
+{id:'trunk',cls:'thoraco_pelvic',title:'胸郭・骨盤の相対回旋の影響',origin:'v112',note:'胸郭・骨盤の相対的な位置と回旋可動性を検討します。特定の筋の短縮・弱化を直接示すものではありません。観察による相対回旋（テスト「胸郭・骨盤の相対回旋」）はエビデンスなしのため根拠に数えず、骨盤固定で測る胸椎回旋ROMの左右差（最小差6°）だけを測定の手がかりにします。',findingTriggers:[{cat:'pelvis',opts:['rot_r','rot_l']},{cat:'thorax',opts:['rot_r','rot_l']}],rules:[{testId:'trunk',support:['asym'],refute:['normal'],supportText:'体幹回旋テストに左右差があった',refuteText:'体幹回旋テストの左右差は小さかった'}],relatedTests:['trunkrot','sitstand','trunk']},
+{id:'control',cls:'motor_control',title:'下肢・骨盤の動作制御',origin:'v112',note:'動作中の代償と条件による変化を検討します。',findingTriggers:[{cat:'pelvis',opts:['up_r','up_l']},{cat:'knee',opts:['valgus','varus']}],rules:[{testId:'singleleg',support:['右支持で変化大','左支持で変化大','左右とも変化'],refute:['明確な差なし'],supportText:'片脚立位で変化が大きかった',refuteText:'片脚立位で明確な差はなかった'},{testId:'squat',support:['右側の変化大','左側の変化大','両側'],refute:['目立つ差なし'],supportText:'スクワットで変化がみられた',refuteText:'スクワットで目立つ差はなかった'},{testId:'trendelenburg',support:['positive'],refute:['negative'],supportText:'片脚立位で骨盤の保持が困難だった',refuteText:'片脚立位は安定して保持できた'}],relatedTests:['singleleg','squat','trendelenburg']},
+{id:'foot',cls:'foot_chain',title:'足部・足関節の可動性と荷重',origin:'v112',note:'足部の所見と上位の所見が同時にみられることは関連の候補であり、因果の証明ではありません。',findingTriggers:[{cat:'subtalar',opts:['pron']},{cat:'arch',opts:['low','trans_low']},{cat:'ankle',opts:['ever','dorsi','plantar']}],rules:[{testId:'foot_align',support:['positive'],refute:['negative'],supportText:'足部アライメント評価で回内・アーチ低下が確認できた',refuteText:'足部アライメントの所見は小さかった'},{testId:'load',support:['change'],refute:['same'],supportText:'足部・荷重条件の変更で上位の所見が変化した',refuteText:'条件を変えても所見が不変だった'},{testId:'squat',support:['右側の変化大','左側の変化大','両側'],refute:['目立つ差なし'],supportText:'スクワットで変化がみられた',refuteText:'スクワットで目立つ差はなかった'}],relatedTests:['ankleDF','loadobs','squat','foot_align']},
+{id:'scapctrl',cls:'motor_control',title:'肩甲帯の動作協調性',origin:'v112',note:'肩甲骨運動と胸郭・上肢の協調性を確認します。動作観察の左右差であり、静止位の所見とは分けて扱います。',findingTriggers:[{cat:'girdle',opts:['elev','depr','wing','ant'],asym:true},{cat:'girdle',opts:['wing']}],rules:[{testId:'scap',support:['右で変化大','左で変化大','両側'],refute:['差なし'],supportText:'肩甲骨の動作で変化が大きかった',refuteText:'肩甲骨の動作に差はなかった'},{testId:'scapula',support:['asym'],refute:['normal'],supportText:'肩甲骨の動作観察で左右差を認めた',refuteText:'肩甲骨の動作の左右差は小さかった'},{testId:'shoulder_rom',support:['positive'],refute:['negative'],supportText:'肩関節ROMに制限・左右差があった',refuteText:'肩関節ROMの左右差は小さかった'}],relatedTests:['scap','scapula','shoulder_rom']},
+{id:'neckmob',cls:'rom',title:'頸部の可動性',origin:'v112',note:'頭頸部の運動範囲を確認します。静止位の偏位と可動域の制限は別の所見です。',findingTriggers:[{cat:'head',opts:['tilt_r','tilt_l','rot_r','rot_l']},{cat:'neck',opts:['tilt_r','tilt_l','rot_r','rot_l']}],rules:[{testId:'cervical_rom',support:['positive'],refute:['negative'],supportText:'頸部ROMに左右差・制限があった',refuteText:'頸部ROMの左右差は小さかった'}],relatedTests:['cervrot','cervical_rom']},
+{id:'breathmob',cls:'motor_control',title:'呼吸時の胸郭運動パターン',origin:'v112',note:'呼吸時の運動を観察します。胸式呼吸や浅い呼吸は観察所見であり、それ自体が異常や原因を意味するものではありません。呼吸観察（呼吸時胸郭運動の観察／呼吸パターンの観察）はエビデンスなしのため、見立ては自動では「手がかりあり」になりません（手動での見立て変更は可能です）。',findingTriggers:[{cat:'breath',opts:['thoracic','shallow','asymmetry']},{cat:'thorax',opts:['flare']}],rules:[{testId:'breathobs',support:['左右差あり','浅い傾向'],refute:['目立つ差なし'],supportText:'呼吸観察で左右差・浅い傾向がみられた',refuteText:'呼吸観察で目立つ差はなかった'},{testId:'breathing_obs',support:['positive'],refute:['negative'],supportText:'呼吸観察で胸式優位・浅さ・左右差が再現された',refuteText:'呼吸観察では腹部の拡張が十分だった'}],relatedTests:['breathobs','breathing_obs']},
+{id:'hipflexor_ext',cls:'extensibility',title:'股関節屈筋群の伸張性低下',origin:'app',note:'腸腰筋・大腿直筋は解剖学的に股関節屈曲に作用しますが、実際に伸張性低下が確認できた場合のみ候補として扱います。トーマステストは角度方式（骨盤統制＋角度数値）の結果だけを根拠にし、pass/failのみの結果は数えません。腹臥位の股関節伸展ROMの数値も根拠に数えません。',findingTriggers:[{cat:'pelvis',opts:['ant']},{cat:'lumbar',opts:['hyper']}],rules:[{testId:'thomas',support:['positive'],refute:['negative'],supportText:'トーマステストで伸張性の低下が示唆された',refuteText:'トーマステストでは伸張性低下は示唆されなかった'},{testId:'extension',support:['right','left','both'],refute:['normal'],supportText:'股関節伸展ROMに制限を認めた',refuteText:'股関節伸展ROMに明らかな制限はなかった'}],relatedTests:['thomas','extension','hipExt']},
+{id:'hamstring_ext',cls:'extensibility',title:'ハムストリングスの伸張性低下',origin:'app',note:'SLRの角度は神経系の伸張性や骨盤の代償でも変わります。単独で筋の短縮と断定しません。',findingTriggers:[{cat:'pelvis',opts:['post']},{cat:'lumbar',opts:['hypo']}],rules:[{testId:'slr',support:['positive'],refute:['negative'],supportText:'SLRで左右差・短さがみられた',refuteText:'SLRでは十分な角度が得られた'}],relatedTests:['slr']},
+{id:'glute_strength',cls:'strength',title:'股関節外転・伸展筋の筋機能低下',origin:'app',note:'片脚立位の観察は筋力だけでなくバランスや運動制御の影響も受けます。筋力の確定には別途筋力評価が必要です。トレンデレンブルグの目視判定はエビデンスなしのため根拠に数えません。',findingTriggers:[{cat:'pelvis',opts:['up_r','up_l']},{cat:'knee',opts:['valgus']}],rules:[{testId:'trendelenburg',support:['positive'],refute:['negative'],supportText:'片脚立位で骨盤の保持が困難だった',refuteText:'片脚立位は安定して保持できた'},{testId:'singleleg',support:['右支持で変化大','左支持で変化大','左右とも変化'],refute:['明確な差なし'],supportText:'片脚立位で変化が大きかった',refuteText:'片脚立位で明確な差はなかった'}],relatedTests:['trendelenburg','singleleg']},
+{id:'shoulder_trunk',cls:'thoraco_pelvic',title:'胸郭の位置・体幹運動との関連',origin:'mvp',note:'胸郭位置を変えると肩峰の高さが変化したことから挙がる候補です（MVPの仮説を保持）。',findingTriggers:[{cat:'girdle',opts:['elev','depr'],asym:true}],rules:[{testId:'shoulder',support:['trunk'],refute:['same'],supportText:'胸郭位置を変えると肩峰の高さが変化した',refuteText:'胸郭を整えても左右差が残った'}],relatedTests:['shoulder','trunkrot']},
+{id:'shoulder_local',cls:'strength',title:'局所的な肩甲帯・肩関節の要因',origin:'mvp',note:'胸郭位置を整えても所見が残る場合の候補です（MVPの仮説を保持）。筋機能・可動域など複数の要因を含みます。',findingTriggers:[{cat:'girdle',opts:['elev','depr','wing','ant'],asym:true}],rules:[{testId:'shoulder',support:['same'],refute:['trunk'],supportText:'胸郭位置を整えても所見が残った',refuteText:'胸郭位置と連動して変化した'},{testId:'shoulder_rom',support:['positive'],refute:['negative'],supportText:'肩関節ROMに制限・左右差があった',refuteText:'肩関節ROMの左右差は小さかった'}],relatedTests:['shoulder','shoulder_rom','scap']},
+{id:'individual',cls:'measurement',title:'静的姿勢の個人差・測定条件',origin:'mvp',note:'主要テストで明確な機能制限を確認できない場合に残る候補です。立ち方・測定条件・骨形態の個人差を含みます。立位・座位比較と相対回旋の観察はエビデンスなしのため、自動判定の複合条件からは外しています。',findingTriggers:[{cat:'pelvis',opts:['rot_r','rot_l','up_r','up_l','ant','post']},{cat:'girdle',opts:['elev','depr'],asym:true}],rules:[],requiresAll:[{testId:'stance',values:['same']},{testId:'hip',values:['normal']},{testId:'trunk',values:['normal']}],relatedTests:['stance','hip','trunk']}
+];
+const hypById=id=>HYPOTHESES.find(h=>h.id===id);
+/* ===== 左右差の最小差（テスト別・エビデンス根拠）と、根拠に使わないテスト =====
+   従来の単位一律の最小差（角度5°／距離1cm／荷重2kg）は廃止し、テストごとのMDC等に基づく値（各テストの minDiff／minDiffBasis）に差し替えた。
+   時間（秒）は今回の検証対象外のため、便宜的設定3秒を「エビデンス未確認（便宜的設定）」と明記して維持する（UNIT_MIN_DIFF は秒のみ）。
+   evidenceUse:'none' のテストは記録・表示は残すが、仮説の支持・反証（手がかり判定）とリリース連携の根拠には使わない。
+   トーマステストは角度方式（骨盤統制＋角度数値）のみ根拠化し、pass/fail のみの結果は根拠にしない。 */
+const UNIT_MIN_DIFF={'秒':3};
+const unitMinDiff=unit=>unit==='秒'?3:null;
+const isNoEvidenceTest=test=>!!test&&test.evidenceUse==='none';
+function testMinDiff(test,t){if(!test||isNoEvidenceTest(test))return null;const unit=(t&&t.unit)||test.unit||'';if(typeof test.minDiff==='number'&&(!test.unit||unit===test.unit))return{value:test.minDiff,unit:test.unit||unit,basis:test.minDiffBasis||'',status:'evidence'};if(unit==='秒')return{value:3,unit:'秒',basis:'時間（秒）は今回の検証対象外のため、従来の便宜的設定3秒を維持します',status:'unverified'};return null}
+function numericInfo(test,t){if(!test||!t||t.valueRight==null||t.valueLeft==null)return null;const unit=t.unit||test.unit||'';const diff=t.valueRight-t.valueLeft;const md=testMinDiff(test,t);const thr=md?md.value:null;const usable=!isNoEvidenceTest(test);const belowRef=usable&&(typeof test.refLow==='number')&&t.valueRight<test.refLow&&t.valueLeft<test.refLow;return{unit:unit,diff:diff,threshold:thr,basis:md?md.basis:'',thresholdStatus:md?md.status:null,evidenceUsable:usable,asym:usable&&thr!=null&&Math.abs(diff)>=thr,belowRef:belowRef,smaller:diff<0?'right':diff>0?'left':null}}
+function bilateralInfo(test,t){if(!test||test.kind!=='bilateral')return null;return numericInfo(test,t)}
+function thomasAngleVerdict(tests){const test=testById('thomas'),t=tests?tests.thomas:null;if(!test||!t)return null;const hasR=t.valueRight!=null,hasL=t.valueLeft!=null;if(!hasR&&!hasL)return null;if(hasR&&hasL){const info=numericInfo(test,t);if(!info)return null;return info.asym?'support':'refute'}const v=verdictOf(t);if(v==='positive')return 'support';if(v==='negative')return 'refute';return null}
+function measuredText(test,t){if(!test||!t||!testDone(t))return null;if(t.valueRight==null&&t.valueLeft==null)return null;if(test.kind!=='bilateral'&&!test.numeric&&test.id!=='thomas')return null;const unit=t.unit||test.unit||'';const diff=(t.valueRight!=null&&t.valueLeft!=null)?'（右−左 '+(t.valueRight-t.valueLeft).toFixed(1)+unit+'）':'';let extra='';const info=numericInfo(test,t);if(info){const parts=[];if(info.smaller)parts.push('小さい側：'+(info.smaller==='right'?'右':'左'));if(info.belowRef)parts.push('両側とも参考値未満（参考下限 '+test.refLow+unit+'）');if(isNoEvidenceTest(test))parts.push('エビデンスなし：判定根拠に使いません');if(parts.length)extra='（'+parts.join('／')+'）'}return test.name+'：右 '+(t.valueRight==null?'—':t.valueRight)+unit+' / 左 '+(t.valueLeft==null?'—':t.valueLeft)+unit+diff+extra}
+function evidenceBadgeHTML(test){if(isNoEvidenceTest(test))return '<p style="margin:6px 0 0"><span class="tag" style="background:#4d3a14;color:#ffcf7d">エビデンスなし（判定根拠に使いません）</span></p>'+(test.evidenceNote?'<p class="muted" style="margin:4px 0 0">'+esc(test.evidenceNote)+'</p>':'');if(typeof test.minDiff==='number')return '<p class="muted" style="margin:6px 0 0">左右差の最小差：'+test.minDiff+(test.unit||'')+'（根拠：'+esc(test.minDiffBasis||'')+'）</p>';return ''}
+function thresholdNoteHTML(test){if(isNoEvidenceTest(test))return '<p class="muted" style="margin:6px 0 0">エビデンスなし（判定根拠に使いません）：結果・数値は記録できますが、仮説の手がかり判定には使われません。</p>';if(typeof test.minDiff==='number')return '<p class="muted" style="margin:6px 0 0">左右差は '+test.minDiff+(test.unit||'')+' 以上で手がかりとして扱います（根拠：'+esc(test.minDiffBasis||'')+'）。</p>';return ''}
+function detailExtraHTML(s,test){let h='';
+  if(s){let reasons=[];const item=suggestedTests(s.findings,s.tests).find(r=>r.test.id===test.id);if(item)reasons=item.reasons;else reasons=anyTriggerHits(s.findings,test.triggers);
+    if(reasons.length)h+='<p class="muted" style="margin:6px 0 0">関連する所見：'+esc(reasons.join('、'))+'</p>'}
+  if(test.id==='thomas')h+='<p class="muted" style="margin:6px 0 0">判定ルール：トーマステストは、骨盤を統制して角度（傾斜計等）で測った数値がある場合のみ仮説の根拠に使います。「制限・所見あり／所見なし」（pass/fail）だけでは根拠になりません。</p>';
+  else if(!isNoEvidenceTest(test)&&typeof test.minDiff==='number')h+='<p class="muted" style="margin:6px 0 0">判定ルール：左右差は '+test.minDiff+(test.unit||'')+' 以上で手がかりとして扱います。</p>';
+  return h}
+function evaluateHypotheses(findings,tests){const results=[];
+  for(const def of HYPOTHESES){const findingHits=anyTriggerHits(findings,def.findingTriggers);const supporting=findingHits.map(h=>'初期所見：'+h);const refuting=[],measured=[];let testSupport=false;
+    if(def.requiresAll){const usableReq=def.requiresAll.filter(r=>!isNoEvidenceTest(testById(r.testId)));const allMatch=usableReq.length>=2&&usableReq.every(r=>r.values.indexOf(verdictOf(tests[r.testId]))>=0);if(allMatch){supporting.push('現在のテストで明確な機能制限を確認できない');testSupport=true}}
+    for(const rule of def.rules){if(isNoEvidenceTest(testById(rule.testId)))continue;if(rule.testId==='thomas'){const tv=thomasAngleVerdict(tests);if(tv==='support'){supporting.push(rule.supportText+'（角度方式：骨盤統制＋角度の左右差が最小差以上）');testSupport=true}else if(tv==='refute'){refuting.push(rule.refuteText+'（角度方式：左右差は最小差未満）')}continue}const v=verdictOf(tests[rule.testId]);if(!v||v==='unknown'||v==='inconclusive'||v==='not_done'||v==='判定不能'||v==='実施困難')continue;if(rule.support.indexOf(v)>=0){supporting.push(rule.supportText);testSupport=true}else if(rule.refute.indexOf(v)>=0){refuting.push(rule.refuteText)}}
+    let measuredClue=false;
+    for(const tid of def.relatedTests){const test=testById(tid),t=tests[tid];if(!test||!t)continue;const m=measuredText(test,t);if(m)measured.push(m);const info=numericInfo(test,t);if(info&&info.evidenceUsable&&(info.asym||info.belowRef))measuredClue=true}
+    const findingOnly=supporting.length===findingHits.length;
+    const hasSupport=testSupport||measuredClue;
+    const level=(hasSupport&&refuting.length>0)?'mixed':hasSupport?'clue':(refuting.length>0&&findingOnly)?'unlikely':'unknown';
+    const active=findingHits.length>0||testSupport||refuting.length>0||measured.length>0;
+    if(!active)continue;
+    const missing=def.relatedTests.map(id=>testById(id)).filter(t=>t&&!testDone(tests[t.id]));
+    const ranked=suggestedTests(findings,tests);
+    const nextHit=ranked.find(r=>def.relatedTests.indexOf(r.test.id)>=0&&!r.done);
+    const nextTest=nextHit?nextHit.test:missing[0];
+    results.push({def,supporting,refuting,measured,missing,level,nextTest})}
+  const order={clue:0,mixed:1,unknown:2,unlikely:3};results.sort((a,b)=>order[a.level]-order[b.level]);return results}
+/* ================= カタログ：リリース候補 ================= */
+const RELEASE_METHOD='表層を軽〜中程度の圧で20〜45秒、痛みやしびれを出さずに試す。強い圧迫や長時間の固定は避ける。';
+const RELEASE_WARNING='注意：急性外傷、腫れ・熱感、原因不明の強い痛み、しびれ、血栓が疑われる下腿症状では実施しないでください。効果がなくても圧を強めないでください。';
+/* ===== アナトミートレイン（筋膜経線）：参考モデル。因果の確定ルールには使わない ===== */
+const AT_LINES=[
+{id:'SBL',name:'SBL',short:'SBL',muscles:['腓腹筋','ヒラメ筋','ハムストリングス','脊柱起立筋']},
+{id:'SFL',name:'SFL',short:'SFL',muscles:['前脛骨筋','長趾伸筋','大腿四頭筋','腹直筋','胸鎖乳突筋']},
+{id:'LTL',name:'LTL',short:'LTL',muscles:['腓骨筋群','大腿筋膜張筋','大殿筋','腹斜筋','肋間筋','胸鎖乳突筋','頭板状筋']},
+{id:'SPL',name:'SPL',short:'SPL',muscles:['頭板状筋','頸板状筋','菱形筋','前鋸筋','腹斜筋','大腿筋膜張筋','前脛骨筋','腓骨筋群','大腿二頭筋','脊柱起立筋']},
+{id:'AL',name:'AL',short:'AL',muscles:['大胸筋','小胸筋','広背筋','僧帽筋','烏口腕筋','上腕二頭筋','上腕三頭筋','前腕屈筋群','前腕伸筋群']},
+{id:'FL',name:'FL',short:'FL',muscles:['広背筋','大殿筋','外側広筋','大胸筋','腹直筋','腹斜筋','長内転筋']},
+{id:'DFL',name:'DFL',short:'DFL',muscles:['後脛骨筋','長趾屈筋','膝窩筋','内転筋群','深層外旋筋群','骨盤底筋群','大腰筋','腸骨筋','横隔膜','斜角筋','舌骨上筋群','舌骨下筋群']}
+];
+const atLine=id=>AT_LINES.find(l=>l.id===id);
+const lineShort=id=>(atLine(id)||{}).short||id;
+const lineName=id=>(atLine(id)||{}).name||id;
+/* リリース候補→所属ライン（候補名に明記された筋肉とAT_LINESの構成筋を突き合わせ、全19候補に付与） */
+const RELEASE_LINES={gluteR:['LTL','FL','DFL'],gluteL:['LTL','FL','DFL'],frontHipR:['LTL','SPL'],frontHipL:['LTL','SPL'],calfR:['SBL'],calfL:['SBL'],thoraxR:['SBL','AL','FL'],thoraxL:['SBL','AL','FL'],upperR:['AL'],upperL:['AL'],gluteDeepR:['DFL'],gluteDeepL:['DFL'],neckSideR:['SPL'],neckSideL:['SPL'],chestR:['AL','FL'],chestL:['AL','FL'],thoraxLow:['LTL','SPL','FL'],footMedR:['SBL','DFL'],footMedL:['SBL','DFL']};
+/* 構造的評価の所見→ライン（部位から対応付け。参考メモの集計専用で、因果の確定には使わない） */
+const FINDING_LINES={weight:['SBL','DFL'],breath:['DFL','LTL'],head:['SFL','SPL'],neck:['SPL','DFL'],girdle:['AL','SPL'],shoulder:['AL'],thorax:['SBL','LTL','FL'],lumbar:['SBL','DFL','FL'],pelvis:['DFL','FL','LTL'],hip:['DFL','FL','LTL'],knee:['SBL','SFL','FL'],ankle:['SBL','SFL','LTL'],subtalar:['DFL','LTL','SPL'],arch:['DFL','SBL']};
+/* ================= 評価ガイド（全文） ================= */
+const GUIDE_INTRO=`この資料は、ボディリーディング・チャートの「構造的評価」14項目について、何を観察するか・どう確かめるか・どの所見でチェックするかをまとめた実務用ガイドです。チャート本体と併せてご使用ください。
+位置づけ：元のチャートには評価の数値基準や検査手順の記載がないため、本資料の基準は臨床的な観察原則に基づく運用の提案です。公式の判定基準や医学的な診断指標ではありません。本文中の数値は判定の目安として扱い、所見と痛み・運動機能を安易に結びつけず、再現性を確かめて記録してください。
+評価をそろえるための基本ルール
+01 自然立位を統一する：裸足で、無理に姿勢を正さず楽に立つ。足幅・つま先の角度・膝の伸展状態をそろえ、正面／背面／左右側面の順で観察する。
+02 左右の定義：R／L は常に対象者本人の右／左。左右別の欄がある部位は、右・左それぞれにチェックする。
+03 基準は「反復して明瞭」：いったん姿勢をリセットして2回以上確認し、同じ偏りが観察できたときにチェックする。明確でなければ空欄とし、「保留／不明」をメモに残す。
+04 目印を比較する：耳珠、肩峰、ASIS、PSIS、肩甲骨の下角、膝蓋骨、内外果などの骨指標を左右で比較する。側面観察の基準は重心線（外果のやや前方―膝関節のやや前方―大転子―肩峰―耳珠）。
+05 動作所見は分けて記録する：呼吸、肩の挙上、体幹の回旋、軽いスクワット、歩行などは参考になるが、静止姿勢の所見と動的な所見は必ず区別して書く。
+06 程度を付けると経過が追いやすい：チェックの横に 0＝所見なし／1＝軽度（要再確認）／2＝明瞭／3＝顕著 を付記できる。これは便宜的な記録の尺度であり、検証された重症度ではない。
+注意：姿勢の左右差やアーチの形は個人差が大きく、それ単独では痛み・障害・原因となる筋を特定できません。感覚の異常、進行する筋力低下、強い痛み、息苦しさなどがある場合は、施術の判断の前に適切な医療評価を優先してください。`;
+const GUIDES={
+weight:`観察方向：正面・背面／目印：両足の接地、足底の前後・左右の圧、骨盤・体幹の位置
+評価方法：裸足で自然立位を取り、20～30秒静止させる。左右それぞれの足底で「どこに圧を感じるか」を尋ね、骨盤の側方偏位や靴底のすり減り方も参考にする。可能であれば2台の体重計に片足ずつ乗り、左右荷重を実測して2回確認する。
+評価基準
+均等：左右の荷重がおおむね釣り合い、足底圧の感覚・観察・測定のいずれでも明らかな片側優位が再現しない。実測する場合は左右差10%未満が目安。
+右優位／左優位：その側の足の荷重が反対側より一貫して大きい。骨盤がその側へ偏位して見えることもある。2台の体重計の左右差は荷重比の記録に使い、数値だけで異常とは判定しない。
+前足部：足指～中足骨頭側への圧の集中を反復して認める。踵が浮いていなくても、足底圧の感覚や重心の位置で確認する。
+踵：踵側への圧の集中を反復して認める。体幹後傾の見た目だけでは判定しない。
+判定のコツ：「右／左」と「前足部／踵」は別の軸の所見であり、併記できる（例：右優位＋前足部）。`,
+breath:`観察方向：正面・側面／目印：胸骨上部、下部肋骨、腹壁、左右肋骨の動き
+評価方法：会話せず安静にしてもらい、自然呼吸を5呼吸以上観察する。必要に応じて両手を下部肋骨と腹部に軽く当て、胸部と腹部の動きの相対差を確認する。呼吸回数も数える。
+評価基準
+胸式：吸気時に胸郭の挙上・拡張が腹部より相対的に目立つ。呼吸様式の記述であり、それ自体は異常ではない。
+腹式：吸気時に腹壁の前方への動きや下部肋骨の拡張が、胸郭上部より相対的に目立つ。これも様式の記述であり異常ではない。
+浅い：落ち着いた条件でも胸郭・腹部の動きが小さく、本人が十分に吸えない感覚を伴う場合に「疑い」として記録する。安静時20回／分以上の速さも目安。見た目だけで換気不足とは断定しない。
+左右差：吸気で左右の肋骨の外側への拡張に、反復して確認できる差がある。手の当て方や体幹の回旋をそろえて再確認する。
+判定のコツ：胸式と腹式が混ざるのが一般的。痛みや呼吸困難、めまいがある場合は姿勢評価より医療的な評価を優先する。`,
+head:`観察方向：側面・正面／目印：耳珠、肩峰、鼻・顎の正中、左右の耳の高さ
+評価方法：側面で耳珠（耳の入口付近）と肩峰の前後関係を、正面で鼻・顎と胸骨の方向、両耳の高さを観察する。立ち直ってもらって2回確認し、同じ傾向が再現するかを見る。
+評価基準
+前方偏位：側面で耳珠が肩峰より相対的に前に位置する傾向が明瞭（目安として2cm以上）。上位頸椎の伸展を伴うこともある。
+後方偏位：側面で耳珠が肩峰より相対的に後ろに位置する。顎の引き過ぎによる見かけと区別する。
+右側屈／左側屈：正面で頭部がその側の肩へ傾き、両耳を結ぶ線がその側へ下がって見える。横への平行移動（偏位）と区別する。
+右回旋／左回旋：鼻・顔面の向きが、胸骨の正面に対してその側を向いている。視線だけの移動は除く。
+判定のコツ：偏位＝位置、側屈＝傾き、回旋＝向きは別の評価軸。前方偏位があっても頸部の前弯増強とは限らない。`,
+neck:`観察方向：側面・正面／目印：耳珠～肩峰の位置関係、頸部の輪郭、棘突起列
+評価方法：頭部の位置とは分けて、側面から頸部の前後カーブを観察する。正面・背面で頸部軸の傾きや向き、胸鎖乳突筋・斜角筋の張りの左右差を確認する。首の動き（可動性）は静止所見と分けて記録する。
+評価基準
+前弯増強：頸部の前方凸の輪郭が相対的に強い。視診のみでは骨配列の角度を確定できないため、外観上の傾向として記録する。
+前弯減少：側面で頸部のカーブが相対的に平坦に見える（いわゆるストレートネック様）。皮下組織や頭部位置の影響も考慮する。
+右側屈／左側屈：頸部軸そのものがその側へ傾く。肩の高さの差だけでは決めない。
+右回旋／左回旋：頸部から頭部の向きが、体幹に対してその側へ回っている。胸郭の回旋の影響を除いて確認する。
+判定のコツ：頸椎の前弯角は画像計測なしに定量できない。ここのチェックはあくまで外観上の傾向の記録である。`,
+girdle:`観察方向：正面・背面／腕は脱力／目印：肩峰、鎖骨、肩甲棘、肩甲骨内側縁・下角、胸郭
+評価方法：左右それぞれ、肩峰の高さ・鎖骨の向き・肩甲骨と脊柱との位置関係を観察する。必要に応じて腕のゆっくりした挙上・下降を3～5回行い、肩甲骨内側縁の浮き上がりを確認する。左右別に記録する。
+評価基準
+挙上：対象側の肩峰・肩甲帯全体が、対側より頭側に位置する。首を側屈していない状態で比較する。
+下制：対象側の肩峰・肩甲帯全体が、対側より足側に位置する。鎖骨・肩峰の左右関係も併せて見る。
+前方：対象側の肩甲骨が胸郭に沿って外側・前方へ回り込む（外転／前方配置）傾向で、肩峰も前方に見える。
+後方：対象側の肩甲骨が相対的に脊柱側へ寄り（内転／後方配置）、肩甲帯が後方に見える。
+翼状：肩甲骨の内側縁または下角が胸郭から目立って浮く。壁へのプッシュアップや腕の挙上で再現性を確認し、静止時と動作時を区別して記録する。
+判定のコツ：肩甲骨の形状・皮下脂肪・筋量には個人差が大きい。左右差は同一条件で反復して確認する。`,
+shoulder:`観察方向：正面・側面／目印：上腕骨頭付近、肩峰、肘窩、上腕の軸
+評価方法：肩甲帯の位置を先に確認してから、腕を自然に下ろしたときの上腕の向きを見る。必要に応じて肘90°屈曲位での内・外旋運動を左右比較し、静止位と可動域は分けて記録する。左右別に記録する。
+評価基準
+内旋：上腕が胸郭・肩甲骨に対して内旋方向に保持される傾向。肘窩や上腕の向きで確認し、手のひらの向きだけでは判定しない。
+外旋：上腕が外旋方向に保持される傾向。肘や前腕の回内外の影響を除いて確認する。
+前方変位：肩峰に対して上腕骨頭が前方へ位置する傾向が疑われる。肩前面の見た目だけで断定せず、肩甲帯の前方配置とは区別する。
+異常なし：同一条件で上記の明瞭な偏りを認めず、左右比較や軽い能動運動でも特記すべき所見がない。
+判定のコツ：いわゆる「巻き肩」は、肩甲帯の前方配置・胸郭の姿勢・上腕の内旋などの組合せであり、1つのチェックで一括りにしない。`,
+thorax:`観察方向：正面・側面・背面／目印：胸骨、下部肋骨弓、胸郭の中心、骨盤の中心
+評価方法：側面で胸郭全体と骨盤の前後関係を、正面で胸骨の向きや下部肋骨の左右差を確認する。自然呼吸のときと軽く息を吐いたときの両方で下部肋骨を観察する。
+評価基準
+前方：胸郭全体（胸骨・肋骨の塊）が骨盤に対して前方へ平行移動して見える。肋骨の開き（フレア）とは分けて記録する。
+後方：胸郭全体が骨盤に対して後方へ平行移動して見える。単なる胸椎の後弯と区別する。
+右回旋／左回旋：胸骨の向きや左右肋骨の前後位置から、胸郭が骨盤に対してその側へ回旋している傾向。
+フレア：下部肋骨弓が前外方へ持ち上がり、安静呼気でも下位肋骨の前方への突出・開きが目立つ。肋骨下角（剣状突起下の開き）が広いこと（目安90°以上）も参考にする。
+判定のコツ：前方（位置）とフレア（形）は別項目。開きが呼吸の相で変わる場合は、そのタイミングもメモする。`,
+lumbar:`観察方向：側面・背面／目印：腰部の輪郭、腰椎棘突起列、仙骨、下位肋骨
+評価方法：側面で腰部のカーブを、背面で腰部の軸（棘突起の列）を確認する。骨盤と一緒に評価し、軽い前屈・後屈・側屈・回旋の動きは安静姿勢とは別に記録する。
+評価基準
+前弯増強：側面で腰部の前方凸のカーブが相対的に強く見える。骨盤の前傾や胸郭の位置と照合する。
+前弯減少：側面で腰部のカーブが相対的に平坦に見える。骨盤の後傾や膝の屈曲で生じる見かけの変化も確認する。
+右側屈／左側屈：腰部・体幹の軸がその側へ傾き、左右の腰部の長さやくびれに差がある。骨盤の高さの差とは分けて確認する。
+右回旋／左回旋：胸郭と骨盤の向きに差があり、腰部にその側への回旋が疑われる。視診だけで腰椎椎体の回旋角は特定できない。
+判定のコツ：腰椎は骨盤と胸郭の影響を強く受ける。前弯や回旋の所見だけで痛みや神経症状の原因を決めない。`,
+pelvis:`観察方向：正面・側面・背面／目印：ASIS（上前腸骨棘）、PSIS（上後腸骨棘）、腸骨稜
+評価方法：側面でASISとPSISの高さの関係を、正面・背面で左右の腸骨稜・ASIS・PSISの高さを比較する。必要に応じて左右ASISの前後位置を触診で確認し、体幹の回旋と区別する。
+評価基準
+ニュートラルの目安：側面でASISとPSISはほぼ同じ高さがニュートラル。ASISがわずかに低い程度は正常範囲内。ASISが指1〜2本分はっきり下がっていれば前傾、ASISがPSISより上がっていれば後傾と判断する。
+前傾：側面でASISが相対的に下がり、骨盤が前に傾く傾向が明瞭。
+後傾：側面でASISが相対的に上がり、骨盤が後ろに傾く傾向が明瞭。臀部の見た目だけでは判定しない。
+右挙上／左挙上：その側の腸骨稜・ASISなどが反対側より頭側に位置する。片脚荷重の影響を除き、荷重をそろえて再確認する。
+回旋：左右のASIS・PSISの前後位置や骨盤正面の向きに差があり、骨盤が水平面内で回旋している。チャートに方向の選択肢がないため、右／左を補記する。
+判定のコツ：ASISとPSISの角度には骨形態の個人差が大きく、視診の厳密な「正常角度」は置かない。骨盤全体が前方へ寄る所見（スウェイ）は、人体図や補足メモに記録する。`,
+hip:`観察方向：正面・背面／目印：骨盤の正面、大腿骨の向き、膝蓋骨の向き、つま先の向き
+評価方法：自然立位で、骨盤に対する左右それぞれの大腿の向きと位置を確認する。必要に応じて股関節の屈曲・内外旋の軽い能動運動を左右比較し、膝・下腿・足部のねじれとは分けて考える。左右別に記録する。
+評価基準
+内旋：対象側の大腿が骨盤に対して内旋位に見え、膝蓋骨の向きも内向きの傾向。足先の内向きだけでは決めない。
+外旋：対象側の大腿が骨盤に対して外旋位に見え、膝蓋骨の向きも外向きの傾向。足部の外向きだけでは決めない。
+内転：大腿の軸が骨盤から身体の正中へ寄る傾向。骨盤の傾きや膝の外反と混同しない。
+外転：大腿の軸が骨盤から外方へ離れる傾向。単に足幅が広いだけの状態とは区別する。
+異常なし：同一条件で上記の明瞭な偏りを認めず、左右比較でも特記すべき所見がない。
+判定のコツ：下肢全体のねじれは、股関節・膝・足部のどこで生じているかを分けて観察すると、記録の再現性が上がる。`,
+knee:`観察方向：正面・側面／目印：大腿の軸、膝関節の中心、脛骨の軸、内外果
+評価方法：膝をロックさせず自然に立ってもらい、正面で大腿―膝―足首の並びを、側面で膝の伸展位を確認する。スクワットなどの動作時の所見は動的所見として別に記録する。左右別に記録する。
+評価基準
+外反：正面で膝関節の中心が、股関節と足首を結ぶラインより内側へ寄り、下肢がX脚の方向に見える。
+内反：正面で膝関節の中心が、同ラインより外側へ寄り、下肢がO脚の方向に見える。
+過伸展：側面で大腿と下腿の関係が自然な伸展を越えて後方へ反り、膝が明らかに反張位をとる。
+異常なし：自然立位の前額面・矢状面で明瞭な偏りを認めず、左右差も特記されない。
+判定のコツ：静止姿勢の外反／内反と、スクワット時の膝の内入り（動的外反）は別の所見として分ける。痛みがある場合に強制的な伸展は行わない。`,
+ankle:`観察方向：側面・背面／目印：脛骨の軸、足背、足底、踵骨の縦軸
+評価方法：裸足の立位で、足首の前後方向の角度と後足部の内外への傾きを観察する。背屈・底屈は足部と下腿の相対的な角度、内反・外反は足底が向く方向と踵骨の傾きで分けて確認する。左右別に記録する。
+評価基準
+背屈位：下腿に対して足部が背屈方向へ置かれる傾向。脛骨の前傾や膝の屈曲だけで判定せず、足関節自体の角度を確認する。
+底屈位：下腿に対して足部が底屈方向へ置かれる傾向。踵の浮きや前足部優位の荷重とは区別する。
+内反：後足部・足底が内側を向く傾向。踵骨の傾きも背面から確認する。
+外反：後足部・足底が外側を向く傾向。踵骨の外反と足部全体の位置を確認する。
+判定のコツ：静止立位では背屈／底屈位の判定が難しいことがある。迷う場合は保留とし、背屈の可動域（例：壁に向けた膝の前進で測る方法）などを補足メモに別記する。`,
+subtalar:`観察方向：背面・足部内側／目印：踵骨の傾き、距骨頭周辺、舟状骨、内側縦アーチ
+評価方法：裸足で自然立位を観察し、背面から踵骨の向き、内側から舟状骨と縦アーチ、前方から前足部の向きを確認する。可能であれば歩行時の傾向も別に記録する。左右別に記録する。
+評価基準
+回内：踵骨の外反傾向・内側アーチの低下・前足部の外転傾向など、回内を示す複数の徴候が同時に認められる場合に選択する。
+回外：踵骨の内反傾向・内側アーチの高位・足部の外側荷重傾向など、回外を示す複数の徴候が同時に認められる場合に選択する。
+異常なし：回内・回外への明瞭な偏りが複数の徴候で認められず、左右の足部形態を踏まえても大きな差がない。
+判定のコツ：回内・回外は3つの平面の複合運動であり、踵骨の内反／外反と同義ではない。必要に応じてFPI-6などの多項目の評価法で追って評価する。`,
+arch:`観察方向：内側・前方・足底／目印：内側縦アーチ、舟状骨、横アーチ（中足骨頭部）、足底の接地
+評価方法：自然立位で内側縦アーチの高さ、前足部の幅と中足骨頭の接地、足指の形を左右比較する。内果と第1中足骨頭を結ぶ線（フェイスライン）に対する舟状骨の位置も目安になる。荷重の有無による変化や歩行時の接地も参考にする。左右別に記録する。
+評価基準
+低下：内側縦アーチのくぼみが小さく、荷重時に舟状骨周辺が下がって足底内側の接地が増える傾向（扁平傾向）。
+高位：内側縦アーチのくぼみが深く、荷重時にも内側足底の接地が少ない傾向（凹足傾向）。
+横低下：前足部の中足骨頭部で横方向の支持が低下し、前足部の開大や中央部の荷重・胼胝（たこ）などが重なる場合に疑う。
+異常なし：内側縦アーチ・前足部の形状に明瞭な偏りがなく、左右比較でも特記すべき所見がない。
+判定のコツ：アーチの低さ・高さ自体は疾病ではない。横アーチは見た目だけでは評価が難しいため、前足部の圧・胼胝・症状も併せて記録する。`};
+const GUIDE_RECORD=`姿勢の所見だけで結論を出さず、主訴・機能・再評価までをつなげて記録します。
+治療計画：重要な所見を最大2～3個に絞り、主訴・動作・負荷条件との関連を仮説として記載する。「右肩甲帯：前方＋翼状、挙上時に再現」のように、観察所見と症状を区別して書く。
+次回の治療予定：再評価する項目と条件（立位・歩行・肩挙上など）、左右差、対象となる動作を明記する。施術の方法は評価結果と本人の希望に応じて決める。
+目的：「無症状で腕を挙上できる」「立位での荷重の自覚を左右均等に近づける」など、本人にとって意味があり、達成したか確認できる形で目標を書く。
+仮説：観察所見・症状・動作時所見の関係を断定せずに記す。「胸郭の左回旋と肩挙上の左右差が関連するか確認する」のように、次に確かめる形で書く。
+自宅用課題：実施内容・回数・頻度に加えて、中止の基準（痛みや違和感が増える場合は中止する等）を記載する。
+記載例：右肩甲帯 前方2・翼状1（挙上時に肩のつまり感）→ 仮説「肩甲帯の前方配置と挙上時症状の関連を確認」→ 次回、挙上動作で再評価。`;
+function guideFold(text){return '<details class="fold"><summary>ガイド</summary><div class="guidebody" style="margin-top:8px">'+esc(text)+'</div></details>'}
+const RELEASES=[
+{id:'gluteR',name:'右殿部（大殿筋・深層外旋筋周辺）',origin:'v112',why:'右股関節の内旋制限がある場合の試験的な軟部組織介入',testId:'hipIR',testSide:'right',retest:'右股関節内旋ROM'},
+{id:'gluteL',name:'左殿部（大殿筋・深層外旋筋周辺）',origin:'v112',why:'左股関節の内旋制限がある場合の試験的な軟部組織介入',testId:'hipIR',testSide:'left',retest:'左股関節内旋ROM'},
+{id:'frontHipR',name:'右股関節前外側（大腿筋膜張筋周辺）',origin:'v112',why:'右股関節伸展制限がある場合に表層の軟部組織を評価',testId:'hipExt',testSide:'right',retest:'右股関節伸展ROM'},
+{id:'frontHipL',name:'左股関節前外側（大腿筋膜張筋周辺）',origin:'v112',why:'左股関節伸展制限がある場合に表層の軟部組織を評価',testId:'hipExt',testSide:'left',retest:'左股関節伸展ROM'},
+{id:'calfR',name:'右下腿後面（腓腹筋・ヒラメ筋周辺）',origin:'v112',why:'右荷重位足関節背屈が制限される場合の試験的介入',testId:'ankleDF',testSide:'right',retest:'右荷重位背屈'},
+{id:'calfL',name:'左下腿後面（腓腹筋・ヒラメ筋周辺）',origin:'v112',why:'左荷重位足関節背屈が制限される場合の試験的介入',testId:'ankleDF',testSide:'left',retest:'左荷重位背屈'},
+{id:'thoraxR',name:'右胸郭後外側（胸椎周囲・広背筋周辺）',origin:'v112',why:'体幹回旋の左右差がある場合の試験的介入',testId:'trunkrot',testSide:'right',retest:'胸椎回旋ROM（骨盤固定）'},
+{id:'thoraxL',name:'左胸郭後外側（胸椎周囲・広背筋周辺）',origin:'v112',why:'体幹回旋の左右差がある場合の試験的介入',testId:'trunkrot',testSide:'left',retest:'胸椎回旋ROM（骨盤固定）'},
+{id:'upperR',name:'右肩上部（僧帽筋上部周辺）',origin:'v112',why:'肩甲帯の挙上所見があり、局所の圧痛・可動性を確認した場合',findingCat:'girdle',findingSide:'right',findingOptions:['elev'],retest:'肩甲帯の高さ・上肢挙上'},
+{id:'upperL',name:'左肩上部（僧帽筋上部周辺）',origin:'v112',why:'肩甲帯の挙上所見があり、局所の圧痛・可動性を確認した場合',findingCat:'girdle',findingSide:'left',findingOptions:['elev'],retest:'肩甲帯の高さ・上肢挙上'},
+{id:'gluteDeepR',name:'右殿部深層（深層外旋筋群周辺）',origin:'app',why:'右股関節の外旋制限がある場合の試験的な軟部組織介入',testId:'hipER',testSide:'right',retest:'右股関節外旋ROM'},
+{id:'gluteDeepL',name:'左殿部深層（深層外旋筋群周辺）',origin:'app',why:'左股関節の外旋制限がある場合の試験的な軟部組織介入',testId:'hipER',testSide:'left',retest:'左股関節外旋ROM'},
+{id:'neckSideR',name:'右側頸部後面（頸部後外側の筋群周辺）',origin:'app',why:'右頸部回旋制限がある場合の試験的な軟部組織介入',testId:'cervrot',testSide:'right',retest:'右頸部回旋ROM'},
+{id:'neckSideL',name:'左側頸部後面（頸部後外側の筋群周辺）',origin:'app',why:'左頸部回旋制限がある場合の試験的な軟部組織介入',testId:'cervrot',testSide:'left',retest:'左頸部回旋ROM'},
+{id:'chestR',name:'右前胸部（大胸筋・小胸筋周辺）',origin:'app',why:'右肩甲帯の前方・翼状所見がある場合の試験的な軟部組織介入',findingCat:'girdle',findingSide:'right',findingOptions:['ant','wing'],retest:'肩甲骨の位置・上肢挙上'},
+{id:'chestL',name:'左前胸部（大胸筋・小胸筋周辺）',origin:'app',why:'左肩甲帯の前方・翼状所見がある場合の試験的な軟部組織介入',findingCat:'girdle',findingSide:'left',findingOptions:['ant','wing'],retest:'肩甲骨の位置・上肢挙上'},
+{id:'thoraxLow',name:'胸郭外側下部（肋間・腹斜筋周辺）',origin:'app',why:'胸郭のフレアや呼吸時の左右差がある場合の試験的な軟部組織介入',findingCat:'thorax',findingSide:'none',findingOptions:['flare'],retest:'呼吸時胸郭運動の観察'},
+{id:'footMedR',name:'右足底・下腿内側（足底・後脛骨筋周辺）',origin:'app',why:'右足アーチ低下の所見がある場合の試験的な軟部組織介入',findingCat:'arch',findingSide:'right',findingOptions:['low'],retest:'足部アライメント・荷重位背屈'},
+{id:'footMedL',name:'左足底・下腿内側（足底・後脛骨筋周辺）',origin:'app',why:'左足アーチ低下の所見がある場合の試験的な軟部組織介入',findingCat:'arch',findingSide:'left',findingOptions:['low'],retest:'足部アライメント・荷重位背屈'}
+];
+const releaseById=id=>RELEASES.find(r=>r.id===id);
+/* 所見連携型の候補は、対応する仮説の見立てが「手がかりあり」の場合のみ推奨化する（候補→仮説の対応付け） */
+const RELEASE_HYP_GATE={upperR:['scapctrl','shoulder_local'],upperL:['scapctrl','shoulder_local'],chestR:['scapctrl','shoulder_local'],chestL:['scapctrl','shoulder_local'],thoraxLow:['trunk','breathmob'],footMedR:['foot'],footMedL:['foot']};
+function releaseCandidates(findings,tests,judgements){let hypLevels=null;const levelOf=id=>{if(!hypLevels){hypLevels={};for(const h of evaluateHypotheses(findings,tests))hypLevels[h.def.id]=h.level}const manual=judgements?judgements[id]:null;return manual||hypLevels[id]||null};
+  return RELEASES.map(def=>{const evidence=[];
+  if(def.testId&&def.testSide){const t=tests[def.testId],test=testById(def.testId);if(t&&test&&testDone(t)){const info=numericInfo(test,t);if(info&&info.evidenceUsable&&info.asym&&info.smaller===def.testSide){const mine=def.testSide==='right'?t.valueRight:t.valueLeft,other=def.testSide==='right'?t.valueLeft:t.valueRight;evidence.push('左右差 '+Math.abs(other-mine).toFixed(1)+info.unit+'（'+test.name+'）')}}}
+  if(def.findingCat&&def.findingOptions){const cat=catById(def.findingCat),f=findings[fkey(def.findingCat,def.findingSide||'none')];const gate=RELEASE_HYP_GATE[def.id];let gateHyp=null;if(gate){for(const hid of gate){if(levelOf(hid)==='clue'){gateHyp=hypById(hid);break}}}if(cat&&f&&(!gate||gateHyp)){for(const opt of def.findingOptions){if(f.selected.indexOf(opt)>=0)evidence.push('構造的評価：'+optLabel(cat,opt))}if(evidence.length&&gateHyp)evidence.push('仮説「'+gateHyp.title+'」の見立て：手がかりあり')}}
+  return{def,evidence,recommended:evidence.length>0}})}
+/* ================= 状態と保存（localStorage） ================= */
+const LS_KEY='posture_lab_link_v1';
+const MVP_STORAGE_KEY='posture_lab_v01', V1_STORAGE_KEY='posture_lab_v1';
+const MIGRATED_V01_KEY='posture_lab_migrated_v01', MIGRATED_V1_KEY='posture_lab_migrated_v1';
+const uid=()=> (crypto.randomUUID?crypto.randomUUID():'id'+Date.now()+Math.random().toString(36).slice(2,8));
+const blankSession=()=>({id:uid(),client:'',assessedAt:Date.now(),assessor:'',findings:{},tests:{},retest:{},judgements:{},interventions:[],interventionNames:[],plan:'',next:'',goal:'',redFlag:false,notes:'',createdAt:Date.now()});
+let db=null;
+try{db=JSON.parse(localStorage.getItem(LS_KEY)||'null')}catch(e){db=null}
+if(!db||!Array.isArray(db.clients)||!Array.isArray(db.sessions))db={clients:[],sessions:[],activeClient:null,activeSession:null};
+let view='home'; // home | workspace
+let tab='structure'; // structure | tests | summary | release | report
+let showAllTests=false;
+let importMsg='';
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function save(){try{localStorage.setItem(LS_KEY,JSON.stringify(db));const el=document.getElementById('saved');if(el)el.textContent='✓ この端末に保存済み '+new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})}catch(e){}}
+const curSession=()=>db.sessions.find(s=>s.id===db.activeSession)||null;
+const sessionsOf=name=>db.sessions.filter(s=>s.client===name).sort((a,b)=>b.assessedAt-a.assessedAt);
+function previousSession(s){const list=db.sessions.filter(x=>x.client===s.client&&x.id!==s.id&&x.assessedAt<=s.assessedAt).sort((a,b)=>b.assessedAt-a.assessedAt);return list[0]||null}
+function fmtDT(ms){const d=new Date(ms);const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'/'+p(d.getMonth()+1)+'/'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes())}
+function fmtD(ms){const d=new Date(ms);const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'/'+p(d.getMonth()+1)+'/'+p(d.getDate())}
+function toLocalInput(ms){const d=new Date(ms);const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes())}
+/* ================= 旧データ変換（MVP 0.1 / v1.1.2） ================= */
+const blankConverted=()=>({clientName:'',assessedAt:Date.now(),findings:{},tests:{},retest:{},judgements:{},interventionNames:[],plan:'',next:'',goal:'',redFlag:false,notes:''});
+function convertMvp(mvp){const out=blankConverted();out.clientName='MVP 0.1から移行した評価';
+  const setF=(catId,side,selected)=>{out.findings[fkey(catId,side)]=Object.assign(emptyFinding(),{status:'assessed',selected})};
+  if(mvp.finding==='pelvis_r')setF('pelvis','none',['rot_r']);
+  if(mvp.finding==='pelvis_l')setF('pelvis','none',['rot_l']);
+  if(mvp.finding==='shoulder'){for(const side of['right','left']){out.findings[fkey('girdle',side)]=Object.assign(emptyFinding(),{status:'unable',note:'MVP移行：肩の高さの左右差あり（どちらが高いかは未記録）'})}}
+  for(const pair of Object.entries(mvp.results||{})){const testId=pair[0],value=pair[1];if(!testById(testId)||!value)continue;out.tests[testId]=Object.assign(emptyTest(),{optionValue:value})}
+  out.redFlag=!!mvp.flags;out.notes=mvp.notes||'';return out}
+const LABEL_TO_ID=(()=>{const map={};for(const cat of CATEGORIES){const e=map[cat.id]=map[cat.id]||{};for(const opt of cat.options)e[opt.label]=opt.id}if(map.arch)map.arch['横低下']='trans_low';return map})();
+const V1_TEST_ID_MAP={load:'loadobs'};
+const numOrNull=v=>{if(v===''||v==null)return null;const n=Number(v);return Number.isFinite(n)?n:null};
+function convertV1Result(raw,testId){if(typeof raw!=='object'||raw===null)return null;const status=typeof raw.status==='string'?raw.status:'';if(!status||status==='unassessed')return null;const def=testById(testId);if(!def)return null;const t=emptyTest();
+  if(def.kind==='choice'&&typeof raw.choice==='string'&&raw.choice)t.optionValue=raw.choice;
+  if(def.kind==='bilateral'){t.valueRight=numOrNull(raw.R);t.valueLeft=numOrNull(raw.L);if(status==='done')t.result='positive'}
+  if(status==='unable')t.result='inconclusive';
+  if(typeof raw.note==='string')t.note=raw.note;
+  if(typeof raw.unit==='string'&&raw.unit)t.unit=raw.unit;
+  return t}
+function convertV1Session(s){if(typeof s!=='object'||s===null)return null;const out=blankConverted();
+  out.clientName=(typeof s.client==='string'&&s.client.trim())?s.client.trim():'v1.1.2から移行した評価';
+  if(typeof s.date==='string'&&/^\d{4}-\d{2}-\d{2}/.test(s.date)){const ms=new Date(s.date.slice(0,10)+'T12:00:00').getTime();if(Number.isFinite(ms))out.assessedAt=ms}
+  const findingsRaw=(typeof s.findings==='object'&&s.findings!==null)?s.findings:{};
+  for(const pair of Object.entries(findingsRaw)){const key=pair[0],v=pair[1];if(typeof v!=='object'||v===null)continue;const parts=key.split('_');const catId=parts[0],sideMark=parts[1];const cat=catById(catId);if(!cat)continue;const side=sideMark==='R'?'right':sideMark==='L'?'left':'none';const statusRaw=typeof v.status==='string'?v.status:'';const status=statusRaw==='assessed'?'assessed':statusRaw==='unknown'?'unable':'unevaluated';const labels=Array.isArray(v.values)?v.values.filter(x=>typeof x==='string'):[];const labelMap=LABEL_TO_ID[catId]||{};const selected=labels.map(l=>labelMap[l]).filter(x=>typeof x==='string');if(status==='unevaluated'&&selected.length===0)continue;out.findings[fkey(catId,side)]=Object.assign(emptyFinding(),{status,selected})}
+  const convResults=src=>{const map={};if(typeof src!=='object'||src===null)return map;for(const pair of Object.entries(src)){const testId=V1_TEST_ID_MAP[pair[0]]||pair[0];const c=convertV1Result(pair[1],testId);if(c)map[testId]=c}return map};
+  out.tests=convResults(s.results);out.retest=convResults(s.retest);
+  if(typeof s.hypJudgments==='object'&&s.hypJudgments!==null){const levelMap={'支持する所見あり':'clue','反証する所見あり':'unlikely','情報不足':'unknown','未判定':'unknown','判定不能':'unknown'};for(const pair of Object.entries(s.hypJudgments)){if(typeof pair[1]!=='string')continue;const m=levelMap[pair[1]];if(m)out.judgements[pair[0]]=m}}
+  const v1Names={mob:'可動域エクササイズ',control:'動作制御練習',soft:'軟部組織への軽い介入',breath:'呼吸・胸郭運動の練習'};
+  if(Array.isArray(s.interventions))out.interventionNames=s.interventions.filter(x=>typeof x==='string').map(id=>v1Names[id]||id);
+  out.plan=typeof s.plan==='string'?s.plan:'';out.next=typeof s.next==='string'?s.next:'';out.goal=typeof s.goal==='string'?s.goal:'';
+  const safety=(typeof s.safety==='object'&&s.safety!==null)?s.safety:{};out.redFlag=safety.red===true;
+  out.notes=typeof s.notes==='string'?s.notes:'';return out}
+function parseImportFile(text){let parsed;try{parsed=JSON.parse(text)}catch(e){return{error:'JSONとして読み込めませんでした。'}}
+  if(typeof parsed!=='object'||parsed===null)return{error:'形式が不明なファイルです。'};
+  if(parsed.format==='posture-lab-link'&&parsed.data&&Array.isArray(parsed.data.sessions)){return{linkData:parsed.data}}
+  if(parsed.format==='posture-lab-link'){return{error:'リンク版JSONの内容が正しくありません。'}}
+  if(parsed.format==='posture-lab'){const data=(typeof parsed.data==='object'&&parsed.data!==null)?parsed.data:{};const sessions=Array.isArray(data.sessions)?data.sessions:[];const converted=sessions.map(convertV1Session).filter(x=>x!==null);if(converted.length===0)return{error:'取り込めるセッションがありませんでした。'};return{sessions:converted}}
+  if(typeof parsed.app==='string'&&parsed.app.indexOf('MVP')>=0){const findingName=typeof parsed.finding==='string'?parsed.finding:'';const findingId=findingName==='骨盤全体の右回旋'?'pelvis_r':findingName==='骨盤全体の左回旋'?'pelvis_l':findingName==='肩の高さの左右差'?'shoulder':'';const resultsById={};if(typeof parsed.results==='object'&&parsed.results!==null){for(const pair of Object.entries(parsed.results)){const def=TESTS.find(t=>t.name===pair[0]);if(!def||typeof pair[1]!=='string')continue;const choice=(def.choices||[]).find(c=>c.label===pair[1]);if(choice)resultsById[def.id]=choice.value}}
+    const converted=convertMvp({finding:findingId,notes:typeof parsed.notes==='string'?parsed.notes:'',flags:false,results:resultsById});converted.clientName='MVP 0.1レポートから移行した評価';return{sessions:[converted]}}
+  return{error:'対応していない形式のファイルです（リンク版 / v1.1.2 / MVP 0.1 のJSONに対応）。'}}
+function persistConverted(list){let n=0;for(const c of list){if(!db.clients.some(x=>x.name===c.clientName))db.clients.push({name:c.clientName,note:''});const s=blankSession();s.client=c.clientName;s.assessedAt=c.assessedAt;s.findings=c.findings;s.tests=c.tests;s.retest=c.retest;s.judgements=c.judgements;s.interventionNames=c.interventionNames;s.plan=c.plan;s.next=c.next;s.goal=c.goal;s.redFlag=c.redFlag;s.notes=c.notes;db.sessions.push(s);n++}save();return n}
+function readLegacy(key,guard){try{if(localStorage.getItem(guard))return null;const raw=localStorage.getItem(key);if(!raw)return null;return JSON.parse(raw)}catch(e){return null}}
+let legacyMvp=null,legacyV1=null;
+function checkLegacy(){legacyMvp=readLegacy(MVP_STORAGE_KEY,MIGRATED_V01_KEY);if(legacyMvp&&(typeof legacyMvp!=='object'))legacyMvp=null;const v=readLegacy(V1_STORAGE_KEY,MIGRATED_V1_KEY);legacyV1=(v&&Array.isArray(v.sessions)&&v.sessions.length>0)?v:null}
+function importLegacyMvp(){if(!legacyMvp)return;persistConverted([convertMvp(legacyMvp)]);try{localStorage.setItem(MIGRATED_V01_KEY,'1')}catch(e){}legacyMvp=null;importMsg='MVP 0.1のデータを移行しました。';render()}
+function importLegacyV1(){if(!legacyV1)return;const list=legacyV1.sessions.map(convertV1Session).filter(x=>x!==null);persistConverted(list);try{localStorage.setItem(MIGRATED_V1_KEY,'1')}catch(e){}legacyV1=null;importMsg='旧バージョンの記録 '+list.length+' 件を移行しました。';render()}
+function dismissLegacy(which){try{localStorage.setItem(which==='mvp'?MIGRATED_V01_KEY:MIGRATED_V1_KEY,'1')}catch(e){}if(which==='mvp')legacyMvp=null;else legacyV1=null;render()}
+/* ================= JSON 入出力 ================= */
+function exportJSON(){const blob=new Blob([JSON.stringify({format:'posture-lab-link',version:1,exported:new Date().toISOString(),data:db},null,2)],{type:'application/json'});const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download='posture_lab_link_'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
+let pendingLinkData=null;
+async function importJSON(e){const file=e.target.files[0];if(!file)return;try{const text=await file.text();const r=parseImportFile(text);if(r.error){importMsg='読み込み失敗：'+r.error}else if(r.linkData){pendingLinkData=r.linkData;openConfirm('リンク版JSONの読み込み','現在のリンク版データを、読み込んだファイルの内容で置き換えます。よろしいですか？',applyLinkImport)}else{const n=persistConverted(r.sessions);importMsg='JSONから '+n+' 件の評価を取り込みました。'}}catch(err){importMsg='読み込み失敗：'+err.message}finally{e.target.value='';render()}}
+function applyLinkImport(){const d=pendingLinkData;pendingLinkData=null;if(!d)return;db={clients:Array.isArray(d.clients)?d.clients:[],sessions:Array.isArray(d.sessions)?d.sessions:[],activeClient:null,activeSession:null};view='home';save();importMsg='リンク版のJSONを読み込みました（セッション '+db.sessions.length+' 件）。';render()}
+/* ================= 汎用モーダル ================= */
+let confirmCb=null;
+function openConfirm(title,body,cb){confirmCb=cb;document.getElementById('modalroot').innerHTML='<div class="modal" role="dialog" aria-modal="true"><div class="box"><h3>'+esc(title)+'</h3><p>'+esc(body)+'</p><div class="row" style="margin-top:14px"><button class="btn danger" onclick="doConfirm()">実行する</button><button class="btn secondary" onclick="closeModal()">キャンセル</button></div></div></div>'}
+function doConfirm(){const cb=confirmCb;confirmCb=null;closeModal();if(cb)cb()}
+function closeModal(){document.getElementById('modalroot').innerHTML='';confirmCb=null}
+function openTestDetail(mode,testId){const test=testById(testId);if(!test)return;const s=curSession();const t=(s?(mode==='retest'?s.retest:s.tests):{})[testId]||emptyTest();
+  const isPh=v=>{if(v==null)return true;const x=String(v).trim();return x===''||x==='未登録'||x===APP_DETAIL||x==='未登録（'+UNVERIFIED+'）'};
+  const row=(k,v)=>isPh(v)?'':'<dt>'+esc(k)+'</dt><dd>'+esc(v)+'</dd>';
+  const meta=[esc(ORIGIN_LABEL[test.origin]||''),'信頼性・妥当性：'+esc(test.reliability||UNVERIFIED)];if(!isPh(test.references))meta.push('参考文献：'+esc(test.references));
+  const html='<div class="modal" role="dialog" aria-modal="true"><div class="box"><div class="row between"><h3 style="margin:0">'+esc(test.name)+'</h3><button class="btn secondary small" onclick="closeModal()">閉じる</button></div>'
+  +'<p class="muted">'+meta.join(' ・ ')+'</p>'+evidenceBadgeHTML(test)+detailExtraHTML(s,test)
+  +'<div style="margin:6px 0">'+diagramSVG(test.diagram)+'</div>'
+  +'<dl class="kv">'
+  +row('評価目的',test.purpose)+row('対象',test.targets)+row('開始肢位',test.startPosition)+row('施術者の位置',test.examinerPosition)+row('固定する部位',test.stabilization)+row('動かす方向',test.direction)+row('やり方',test.method)+row('測定方法',test.measurement)+row('正常参考値',test.normalRef)+row('代償動作',test.compensation)+row('陽性の場合',test.interpPositive)+row('陰性の場合',test.interpNegative)+row('禁忌・注意',test.caution)
+  +'</dl>'
+  +'<label class="lbl">測定条件・メモ</label><textarea oninput="setTestNote(\''+mode+'\',\''+testId+'\',this.value)">'+esc(t.note||'')+'</textarea>'
+  +'</div></div>';
+  document.getElementById('modalroot').innerHTML=html}
+function setTestNote(mode,testId,v){const s=curSession();if(!s)return;const map=mode==='retest'?s.retest:s.tests;map[testId]=Object.assign(emptyTest(),map[testId]||{},{note:v});save()}
+/* ================= 画面遷移 ================= */
+const NAVS_HOME=[['home','ホーム']];
+const NAVS_WS=[['structure','評価'],['tests','テスト'],['summary','まとめ'],['release','リリース'],['report','レポート']];
+function render(){renderBanners();const nav=document.getElementById('nav');const content=document.getElementById('content');const actions=document.getElementById('actions');
+  if(view==='home'){nav.innerHTML='<button class="active">ホーム</button>';content.innerHTML=homeView();actions.innerHTML=''}
+  else{const s=curSession();if(!s){view='home';render();return}
+    nav.innerHTML='<button onclick="goHome()">← ホーム</button>'+NAVS_WS.map(n=>'<button class="'+(tab===n[0]?'active':'')+'" onclick="setTab(\''+n[0]+'\')">'+n[1]+'</button>').join('');
+    content.innerHTML=wsHeader(s)+({structure:structureView,tests:testsView,summary:summaryView,release:releaseView,report:reportView})[tab](s);
+    actions.innerHTML=tab==='structure'?'<button class="btn" onclick="setTab(\'tests\')">テストへ →</button>':tab==='tests'?'<button class="btn" onclick="setTab(\'summary\')">まとめへ →</button>':tab==='summary'?'<button class="btn" onclick="setTab(\'release\')">リリースへ →</button>':'';
+  }
+  save()}
+function renderBanners(){const b=[];if(importMsg)b.push('<div class="banner">'+esc(importMsg)+' <button class="btn secondary small" onclick="importMsg=\'\';render()">閉じる</button></div>');
+  if(legacyMvp)b.push('<div class="banner">MVP 0.1 のデータがこのブラウザに残っています。<div class="row" style="margin-top:8px"><button class="btn small" onclick="importLegacyMvp()">移行する</button><button class="btn secondary small" onclick="dismissLegacy(\'mvp\')">移行しない</button></div></div>');
+  if(legacyV1)b.push('<div class="banner">旧バージョン（v1.1.2 / v1.4）の記録 '+legacyV1.sessions.length+' 件がこのブラウザに残っています。<div class="row" style="margin-top:8px"><button class="btn small" onclick="importLegacyV1()">移行する</button><button class="btn secondary small" onclick="dismissLegacy(\'v1\')">移行しない</button></div></div>');
+  document.getElementById('banners').innerHTML=b.join('')}
+function goHome(){view='home';render();window.scrollTo({top:0})}
+function setTab(t){tab=t;render();window.scrollTo({top:0,behavior:'smooth'})}
+function openSession(id){db.activeSession=id;const s=curSession();if(s)db.activeClient=s.client;view='workspace';tab='structure';showAllTests=false;render();window.scrollTo({top:0})}
+/* ================= ホーム ================= */
+let newClientName='',newClientNote='';
+function homeView(){const clients=db.clients;
+  const clientCards=clients.map(c=>{const ss=sessionsOf(c.name);const active=db.activeClient===c.name;return '<div class="panel"><div class="row between"><h3 style="margin:0">'+esc(c.name)+'</h3><span class="tag">評価 '+ss.length+' 件</span></div>'
+  +(c.note?'<p class="muted">'+esc(c.note)+'</p>':'')
+  +'<div class="row" style="margin-top:8px"><button class="btn small" onclick="startSession(\''+esc(c.name)+'\')">＋ 新規評価</button><button class="btn secondary small" onclick="selectClient(\''+esc(c.name)+'\')">'+(active?'選択中':'履歴を見る')+'</button><button class="btn secondary small" onclick="openRenameClient(\''+esc(c.name)+'\')">名前を変更</button><button class="btn danger small" onclick="askDeleteClient(\''+esc(c.name)+'\')">削除</button></div>'
+  +(active?('<div class="section">'+(ss.length?ss.map(s=>sessionRow(s)).join(''):'<p class="muted">評価記録はまだありません。</p>')+'</div>'):'')
+  +'</div>'}).join('');
+  return '<div class="panel"><h2>顧客</h2><label class="lbl">顧客名 / 管理ID（匿名ID推奨）</label><input type="text" id="ncname" value="'+esc(newClientName)+'" oninput="newClientName=this.value" placeholder="例：顧客A">'
+  +'<label class="lbl">メモ（任意）</label><input type="text" id="ncnote" value="'+esc(newClientNote)+'" oninput="newClientNote=this.value">'
+  +'<div class="row" style="margin-top:10px"><button class="btn" onclick="addClient()">顧客を登録</button></div>'
+  +'<details class="fold"><summary>安全確認（評価を始める前に）</summary><p class="muted">急性外傷・強い安静時痛・進行性の神経症状・急な歩行障害・排尿排便障害などがある場合は、通常の姿勢評価より医療機関での評価を優先してください。新規評価の開始時に危険徴候の有無を確認します。危険徴候ありの記録では、追加テストとリリースは表示されません。</p></details>'
+  +'</div>'
+  +(clients.length?'<div class="grid2">'+clientCards+'</div>':'<div class="panel"><p class="muted">顧客がまだ登録されていません。上のフォームから登録してください。</p></div>')}
+function sessionRow(s){const fc=Object.values(s.findings).filter(f=>hasFinding(f)).length;const tc=Object.values(s.tests).filter(testDone).length;return '<div class="row between" style="padding:8px 0;border-bottom:1px solid #31415b"><div><strong>'+esc(fmtDT(s.assessedAt))+'</strong>'+(s.redFlag?' <span class="tag" style="background:#622c39;color:#ffb9c4">危険徴候</span>':'')+'<div class="muted">所見 '+fc+' 区分 ・ テスト '+tc+' 件'+(s.assessor?' ・ '+esc(s.assessor):'')+'</div></div><span class="row"><button class="btn secondary small" onclick="openSession(\''+s.id+'\')">開く</button><button class="btn danger small" onclick="askDeleteSession(\''+s.id+'\')">削除</button></span></div>'}
+function selectClient(name){db.activeClient=db.activeClient===name?null:name;save();render()}
+function addClient(){const name=newClientName.trim();if(!name){importMsg='顧客名を入力してください。';render();return}if(db.clients.some(c=>c.name===name)){importMsg='同名の顧客がすでにあります。';render();return}db.clients.push({name,note:newClientNote.trim()});newClientName='';newClientNote='';db.activeClient=name;save();render()}
+let renameTarget='';
+function openRenameClient(name){renameTarget=name;document.getElementById('modalroot').innerHTML='<div class="modal" role="dialog" aria-modal="true"><div class="box"><h3>顧客名の変更</h3><p class="muted">名前を変更しても、これまでの評価記録との紐付けはそのまま維持されます。</p><label class="lbl">顧客名</label><input type="text" id="renameInput" value="'+esc(name)+'"><p class="muted" id="renameErr" style="color:#ffb9c4"></p><div class="row" style="margin-top:12px"><button class="btn" onclick="saveRenameClient()">保存する</button><button class="btn secondary" onclick="closeModal()">キャンセル</button></div></div></div>';const inp=document.getElementById('renameInput');if(inp){inp.focus();inp.select()}}
+function saveRenameClient(){const inp=document.getElementById('renameInput');if(!inp)return;const nn=inp.value.trim();const err=document.getElementById('renameErr');if(!nn){if(err)err.textContent='顧客名を入力してください。';return}if(nn!==renameTarget&&db.clients.some(c=>c.name===nn)){if(err)err.textContent='同名の顧客がすでにあります。';return}const c=db.clients.find(x=>x.name===renameTarget);if(c)c.name=nn;for(const s of db.sessions){if(s.client===renameTarget)s.client=nn}if(db.activeClient===renameTarget)db.activeClient=nn;renameTarget='';closeModal();save();importMsg='顧客名を変更しました。';render()}
+let startRed=false;
+function startSession(name){startRed=false;document.getElementById('modalroot').innerHTML='<div class="modal" role="dialog" aria-modal="true"><div class="box"><h3>評価をはじめる：'+esc(name)+'</h3><p>開始前に安全確認をしてください。</p><label class="chip" id="startred"><input type="checkbox" onchange="startRed=this.checked"> 危険徴候が疑われる（急性外傷・強い痛み・神経症状など）</label><p class="muted">危険徴候がある場合は通常の評価・介入を中断し、医療機関での評価を優先してください。この記録では追加テストとリリースは行えません。</p><div class="row" style="margin-top:12px"><button class="btn" onclick="createSession(\''+esc(name)+'\')">評価を開始</button><button class="btn secondary" onclick="closeModal()">キャンセル</button></div></div></div>'}
+function createSession(name){const s=blankSession();s.client=name;s.redFlag=!!startRed;db.sessions.push(s);db.activeClient=name;closeModal();openSession(s.id)}
+function askDeleteClient(name){openConfirm('顧客の削除','顧客「'+name+'」と、その評価記録をすべて削除します。よろしいですか？',()=>{db.clients=db.clients.filter(c=>c.name!==name);db.sessions=db.sessions.filter(s=>s.client!==name);if(db.activeClient===name)db.activeClient=null;save();render()})}
+function askDeleteSession(id){openConfirm('評価記録の削除','この評価記録を削除します。よろしいですか？',()=>{db.sessions=db.sessions.filter(s=>s.id!==id);if(db.activeSession===id){db.activeSession=null;view='home'}save();render()})}
+/* ================= ワークスペース共通 ================= */
+function wsHeader(s){return '<div class="panel" style="padding:12px 16px"><div class="row between"><div><strong style="font-size:17px">'+esc(s.client||'（顧客名なし）')+'</strong> <span class="muted">'+esc(fmtDT(s.assessedAt))+'</span></div><span class="row"><button class="btn secondary small" onclick="openRenameClient(\''+esc(s.client||'')+'\')">名前を変更</button><label class="chip '+(s.redFlag?'on':'')+'"><input type="checkbox" '+(s.redFlag?'checked':'')+' onchange="toggleRedFlag(this.checked)"> 危険徴候</label></span></div>'
+  +(s.redFlag?'<div class="warnbox" style="margin-bottom:0">危険徴候が疑われます。通常の評価・介入を中断し、症状に応じて速やかな医療相談を優先してください。追加テストとリリースは行えません。</div>':'')
+  +'</div>'}
+function toggleRedFlag(v){const s=curSession();if(!s)return;s.redFlag=v;save();render()}
+function setMeta(key,v){const s=curSession();if(!s)return;if(key==='assessedAt'){const ms=new Date(v).getTime();if(Number.isFinite(ms))s.assessedAt=ms}else s[key]=v;save()}
+function findingText(s,key){const parts=key.split(':');const cat=catById(parts[0]);if(!cat)return key;const f=s.findings[key];const side=parts[1]==='right'?'右':parts[1]==='left'?'左':'';const st=displayStatus(f);if(!f||f.status==='unevaluated')return cat.ja+side+'：未評価';if(f.status==='unable')return cat.ja+side+'：判断不能';return cat.ja+side+'：'+(f.selected.length?f.selected.map(o=>optLabel(cat,o)).join('、'):'所見なし')}
+/* ================= 評価（構造的評価） ================= */
+function structureView(s){const assessed=Object.values(s.findings).filter(f=>f.status==='assessed').length;
+  let html=guideFold(GUIDE_INTRO)+'<div class="panel"><h2>評価 <span class="tag">14カテゴリ</span></h2><div class="row"><span>評価済 '+assessed+' 区分</span><button class="btn secondary small" onclick="askResetFindings()">全区分を未評価に戻す</button></div>'
+  +'<div class="row" style="margin-top:10px;gap:14px;flex-wrap:wrap"><label style="flex:1;min-width:200px">評価日時<input type="datetime-local" value="'+esc(toLocalInput(s.assessedAt))+'" onchange="setMeta(\'assessedAt\',this.value)"></label><label style="flex:1;min-width:160px">評価者<input type="text" value="'+esc(s.assessor)+'" placeholder="評価者名・ID" oninput="setMeta(\'assessor\',this.value)"></label></div>'
+  +'<label class="lbl">初期所見・相談内容</label><textarea oninput="setMeta(\'notes\',this.value)" placeholder="例：骨盤全体が右回旋している。立位で顕著。">'+esc(s.notes)+'</textarea></div>';
+  html+='<div class="catgrid">'+CATEGORIES.map(c=>catCard(s,c)).join('')+'</div>';
+  const prev=previousSession(s);
+  if(prev){const keys=new Set([].concat(Object.keys(s.findings),Object.keys(prev.findings)));const diffs=[];for(const k of keys){const a=findingText(s,k),b=findingText(prev,k);if(a!==b)diffs.push({a,b})}
+    html+='<div class="panel"><h3>前回との比較（'+esc(fmtDT(prev.assessedAt))+'）</h3>'+(diffs.length?diffs.map(d=>'<p>'+esc(d.a)+' <span class="muted">（前回：'+esc(d.b.replace(/^[^：]+：/,''))+'）</span></p>').join(''):'<p class="muted">前回から変化した所見はありません。</p>')+'</div>'}
+  return html}
+function catCard(s,cat){const sides=cat.bilateral?['right','left']:['none'];
+  return '<div class="panel" style="margin:0"><div class="row between"><h3 style="margin:0">'+cat.no+' '+esc(cat.ja)+'</h3><span class="muted">'+esc(cat.en)+'</span></div>'
+  +sides.map(side=>findingBlock(s,cat,side)).join('')
+  +'<details class="fold" style="margin-bottom:0"><summary>注記</summary>'+(cat.note?'<p class="muted">'+esc(cat.note)+'</p>':'')+'<p class="muted">平面：'+esc(cat.plane)+'</p><p class="muted">出所：'+esc(Array.from(new Set(cat.options.map(o=>ORIGIN_LABEL[o.origin]||o.origin))).join('・'))+'</p></details>'
+  +guideFold(GUIDES[cat.id]||'')
+  +'</div>'}
+function findingBlock(s,cat,side){const key=fkey(cat.id,side);const f=s.findings[key]||emptyFinding();const st=displayStatus(f);
+  const sideLabel=side==='right'?'右 R':side==='left'?'左 L':'';
+  let html='<div'+(side!=='none'?' class="section" style="margin-top:10px;padding-top:10px"':'')+'>'
+  +(sideLabel?'<div class="row between"><strong>'+sideLabel+'</strong><span class="tag">'+st+'</span></div>':'<div class="row" style="margin-bottom:6px"><span class="tag">'+st+'</span></div>')
+  +'<div class="seg" role="group" aria-label="評価状態">'
+  +'<button class="'+(f.status==='unevaluated'?'on':'')+'" onclick="setFindingStatus(\''+key+'\',\'unevaluated\')">未評価</button>'
+  +'<button class="'+(f.status==='assessed'?'on':'')+'" onclick="setFindingStatus(\''+key+'\',\'assessed\')">評価済</button>'
+  +'<button class="'+(f.status==='unable'?'on':'')+'" onclick="setFindingStatus(\''+key+'\',\'unable\')">判断不能</button></div>';
+  if(f.status==='assessed'){html+='<div style="margin-top:8px">'+cat.options.map(o=>{const on=f.selected.indexOf(o.id)>=0;const conflict=!on&&f.selected.some(sel=>optionsConflict(cat,sel,o.id));return '<button type="button" class="chip '+(on?'on':'')+(conflict?' off':'')+'" '+(conflict?'disabled':'')+' onclick="toggleFinding(\''+key+'\',\''+o.id+'\')">'+esc(o.label)+(o.origin==='app'?'（追加）':'')+'</button>'}).join('')+'</div>'}
+  const hasExtra=(f.note&&f.note!=='')||f.value!=null;
+  html+='<details class="fold" '+(hasExtra?'open':'')+' style="margin-bottom:0"><summary>数値・メモ</summary>'
+  +'<div class="row"><input type="number" step="any" class="numin" placeholder="数値" value="'+(f.value==null?'':f.value)+'" oninput="setFindingValue(\''+key+'\',this.value)"><input type="text" style="width:80px" placeholder="単位" value="'+esc(f.unit||'')+'" oninput="setFindingUnit(\''+key+'\',this.value)"></div>'
+  +'<label class="lbl">メモ</label><textarea oninput="setFindingNote(\''+key+'\',this.value)">'+esc(f.note||'')+'</textarea></details>';
+  html+='</div>';return html}
+function getF(s,key){if(!s.findings[key])s.findings[key]=emptyFinding();return s.findings[key]}
+function setFindingStatus(key,status){const s=curSession();if(!s)return;const f=getF(s,key);f.status=status;if(status!=='assessed')f.selected=[];save();render()}
+function toggleFinding(key,optId){const s=curSession();if(!s)return;const cat=catById(key.split(':')[0]);const f=getF(s,key);f.status='assessed';const i=f.selected.indexOf(optId);if(i>=0)f.selected.splice(i,1);else{f.selected=f.selected.filter(sel=>!optionsConflict(cat,sel,optId));f.selected.push(optId)}save();render()}
+function setFindingValue(key,v){const s=curSession();if(!s)return;const f=getF(s,key);f.value=v===''?null:Number(v);save()}
+function setFindingUnit(key,v){const s=curSession();if(!s)return;getF(s,key).unit=v;save()}
+function setFindingNote(key,v){const s=curSession();if(!s)return;getF(s,key).note=v;save()}
+function askResetFindings(){openConfirm('構造的評価のリセット','すべての構造的評価を未評価に戻します。よろしいですか？',()=>{const s=curSession();if(s){s.findings={};save();render()}})}
+/* ================= テスト ================= */
+function testResultWidget(mode,test,t){const id=test.id;const pre=mode+"','"+id;
+  if(test.kind==='choice'){return (mode==='tests'?'':evidenceBadgeHTML(test))+'<div class="row" role="group" aria-label="結果" style="margin-top:6px">'+(test.choices||[]).map(c=>'<button type="button" class="optbtn '+(t.optionValue===c.value?'on':'')+'" onclick="setChoice(\''+pre+'\',\''+esc(c.value)+'\')">'+esc(c.label)+'</button>').join('')+'</div>'+(mode==='tests'?'':thresholdNoteHTML(test))}
+  if(test.kind==='judge'){const opts=[['positive','制限・所見あり'],['negative','所見なし'],['inconclusive','判定不能']];let h=(mode==='tests'?'':evidenceBadgeHTML(test))+'<div class="row" role="group" aria-label="結果" style="margin-top:6px">'+opts.map(o=>'<button type="button" class="optbtn '+(t.result===o[0]?'on':'')+'" onclick="setJudge(\''+pre+'\',\''+o[0]+'\')">'+o[1]+'</button>').join('')+'</div>';
+    if(test.numeric||test.id==='thomas'){const unit=t.unit||test.unit||'';const diff=(t.valueRight!=null&&t.valueLeft!=null)?(t.valueRight-t.valueLeft):null;h+='<div class="row" style="margin-top:8px"><label>右 <input type="number" inputMode="decimal" class="numin" value="'+(t.valueRight==null?'':t.valueRight)+'" oninput="setBilateralSoft(\''+pre+'\',\'valueRight\',this.value)"> '+esc(unit)+'</label><label>左 <input type="number" inputMode="decimal" class="numin" value="'+(t.valueLeft==null?'':t.valueLeft)+'" oninput="setBilateralSoft(\''+pre+'\',\'valueLeft\',this.value)"> '+esc(unit)+'</label>'+'<span class="good" id="diff_'+mode+'_'+id+'">'+(diff!=null?'右−左 '+diff.toFixed(1)+unit:'')+'</span></div>';
+      if(test.id==='thomas')h+=(mode==='tests'?'':'<p class="muted" style="margin:6px 0 0">トーマステストは、骨盤を統制して角度（傾斜計等）で測った数値がある場合のみ仮説の根拠に使います。上の「制限・所見あり／所見なし」（pass/fail）だけでは根拠になりません。角度の左右差の目安は '+test.minDiff+'°（SEMからの換算に基づく目安）です。</p>');
+      else if(mode!=='tests')h+=thresholdNoteHTML(test)}
+    else if(isNoEvidenceTest(test)&&mode!=='tests')h+=thresholdNoteHTML(test);
+    return h}
+  const unit=t.unit||test.unit||'';const diff=(t.valueRight!=null&&t.valueLeft!=null)?(t.valueRight-t.valueLeft):null;
+  return (mode==='tests'?'':evidenceBadgeHTML(test))+'<div class="row" style="margin-top:6px"><label>右 <input type="number" inputMode="decimal" class="numin" value="'+(t.valueRight==null?'':t.valueRight)+'" oninput="setBilateralSoft(\''+pre+'\',\'valueRight\',this.value)"> '+esc(unit)+'</label><label>左 <input type="number" inputMode="decimal" class="numin" value="'+(t.valueLeft==null?'':t.valueLeft)+'" oninput="setBilateralSoft(\''+pre+'\',\'valueLeft\',this.value)"> '+esc(unit)+'</label>'
+  +'<span class="good" id="diff_'+mode+'_'+id+'">'+(diff!=null?'右−左 '+diff.toFixed(1)+unit:'')+'</span></div>'
+  +'<div class="row" style="margin-top:8px"><button type="button" class="optbtn small '+(t.result==='positive'?'on':'')+'" onclick="setJudge(\''+pre+'\',\'positive\')">実施済みとして記録</button><button type="button" class="optbtn small '+(t.result==='inconclusive'?'on':'')+'" onclick="setJudge(\''+pre+'\',\'inconclusive\')">判定不能</button></div>'
+  +(mode==='tests'?'':thresholdNoteHTML(test))}
+function getT(s,mode,id){const map=mode==='retest'?s.retest:s.tests;if(!map[id])map[id]=emptyTest();return map[id]}
+function setChoice(mode,id,v){const s=curSession();if(!s)return;const t=getT(s,mode,id);t.optionValue=(t.optionValue===v)?'':v;save();render()}
+function setJudge(mode,id,v){const s=curSession();if(!s)return;const t=getT(s,mode,id);t.result=(t.result===v)?'not_done':v;save();render()}
+function setBilateralSoft(mode,id,field,v){const s=curSession();if(!s)return;const t=getT(s,mode,id);t[field]=v===''?null:Number(v);save();const el=document.getElementById('diff_'+mode+'_'+id);if(el){const test=testById(id);const unit=t.unit||(test?test.unit:'')||'';el.textContent=(t.valueRight!=null&&t.valueLeft!=null)?'右−左 '+(t.valueRight-t.valueLeft).toFixed(1)+unit:''}}
+function testCard(mode,s,item,badge){const test=item.test||item;const t=(mode==='retest'?s.retest:s.tests)[test.id]||emptyTest();const done=testDone(t);
+  return '<div class="test"><div class="row between"><strong>'+esc(test.name)+'</strong><span class="row">'+(done?'<span class="tag good">記録済み</span>':'')+(badge?'<span class="tag">'+esc(badge)+'</span>':'')+'<button class="btn secondary small" onclick="openTestDetail(\''+mode+'\',\''+test.id+'\')">詳細</button></span></div>'
+  +'<p class="muted" style="margin:4px 0 10px">'+esc(test.purpose)+'</p>'
+  +testResultWidget(mode,test,t)+'</div>'}
+function testsView(s){if(s.redFlag)return '<div class="warnbox">危険徴候が疑われるため、追加テストは行わず、医療機関での評価を優先してください。</div>';
+  const ranked=suggestedTests(s.findings,s.tests);const pending=ranked.filter(r=>!r.done);const top=pending.slice(0,3);const topIds=new Set(top.map(r=>r.test.id));
+  const doneRanked=ranked.filter(r=>r.done);const rest=pending.slice(3);const others=TESTS.filter(t=>!ranked.some(r=>r.test.id===t.id));
+  let html='<div class="panel"><h2>テスト</h2><p class="muted">おすすめ上位3件から。結果を入力すると「まとめ」と「リリース」が更新されます。「エビデンスなし（判定根拠に使いません）」のテストは記録できますが、仮説の見立てには影響しません。数値テストの左右差は、テスト別の最小差（MDC等の根拠に基づく値）以上で手がかりになります。</p><div class="row"><span class="tag">残りのおすすめ '+pending.length+' 件</span><span class="tag">記録済み '+doneRanked.length+' 件</span></div></div>';
+  if(top.length)html+=top.map((r,i)=>testCard('tests',s,r,'おすすめ '+(i+1))).join('');
+  else html+='<div class="panel"><p>おすすめのテストは完了しました。「まとめ」で候補を確認してください。</p></div>';
+  if(doneRanked.length)html+=doneRanked.map(r=>testCard('tests',s,r,'記録済み')).join('');
+  const foldItems=rest.concat(others.map(t=>({test:t,reasons:[],done:testDone(s.tests[t.id])})));
+  if(foldItems.length)html+='<details class="fold" '+(showAllTests?'open':'')+' ontoggle="showAllTests=this.open"><summary>ほかのテスト（'+foldItems.length+'件）</summary>'+foldItems.map(r=>testCard('tests',s,r,r.done?'':'候補')).join('')+'</details>';
+  return html}
+/* ================= まとめ（仮説） ================= */
+function summaryView(s){const hyps=evaluateHypotheses(s.findings,s.tests);const doneCount=Object.values(s.tests).filter(testDone).length;
+  let html='<div class="panel"><h2>まとめ</h2><p class="muted">候補は原因の確定ではありません。見立ては自動表示で、タップで変更できます（変更が保存されます）。</p><p class="muted">測定値の左右差は、テスト別の最小差（背屈2.0cm／頸部回旋7°／股関節内旋・外旋11°／SLR 11°／FABER 4.0cm／胸椎回旋6°、いずれもMDC等の根拠に基づく値）以上ある場合のみ手がかりとして扱います。参考下限（背屈10cm／股内旋30°）の仕組みは維持しています。胸郭−骨盤の相対回旋の観察、立位・座位の比較観察、呼吸パターンの観察、股関節伸展ROM（腹臥位）、トレンデレンブルグ目視、二台の体重計の左右差は「エビデンスなし」として根拠に数えません。トーマステストは角度方式の数値がある場合のみ根拠にします。時間（秒）の3秒は検証対象外のため便宜的設定（エビデンス未確認）として維持しています。</p><div class="row"><span class="tag">実施したテスト '+doneCount+' 件</span><button class="btn secondary small" onclick="setTab(\'tests\')">テストに戻る</button></div></div>';
+  if(!hyps.length)html+='<div class="panel"><p class="muted">まだ候補がありません。「評価」で所見を入力してください。</p></div>';
+  html+=hyps.map(h=>{const manual=s.judgements[h.def.id];const level=manual||h.level;
+    return '<div class="panel"><div class="row between"><div><span class="tag">'+esc(hypClass(h.def.cls))+'</span> <strong>'+esc(h.def.title)+'</strong></div><span class="level '+level+'">'+HYP_LEVEL_LABEL[level]+(manual?'（手動）':'')+'</span></div>'
+    +'<div class="seg" role="group" aria-label="見立て" style="margin-top:8px">'+['clue','unknown','unlikely'].map(lv=>'<button class="'+(level===lv?'on':'')+'" onclick="setJudgement(\''+h.def.id+'\',\''+lv+'\')">'+HYP_LEVEL_LABEL[lv]+'</button>').join('')+'</div>'
+    +(h.nextTest?'<p style="margin-top:10px">次にやるテスト：<button class="btn secondary small" onclick="setTab(\'tests\')">'+esc(h.nextTest.name)+' →</button></p>':'<p class="muted" style="margin-top:10px">関連テストは実施済みです。</p>')
+    +'<details class="fold" style="margin-bottom:0"><summary>根拠の内訳</summary>'
+    +'<p class="muted">'+esc(h.def.note)+'</p>'
+    +(h.supporting.length?'<p><strong>支持する所見</strong><br>'+h.supporting.map(esc).join('<br>')+'</p>':'')
+    +(h.refuting.length?'<p><strong>反証する所見</strong><br>'+h.refuting.map(esc).join('<br>')+'</p>':'')
+    +(h.measured.length?'<p><strong>測定値</strong><br>'+h.measured.map(esc).join('<br>')+'</p><p class="muted">左右差の手がかり判定には、テスト別の最小差（MDC等の根拠に基づく値）を用いています。エビデンスなしのテストの数値は表示のみで、判定には使っていません。</p>':'')
+    +(h.missing.length?'<p><strong>不足している評価</strong><br>'+h.missing.map(t=>esc(t.name)).join('、')+'</p>':'')
+    +'</details></div>'}).join('');
+  const byLine={};for(const p of releaseCandidates(s.findings,s.tests,s.judgements)){if(!p.recommended)continue;for(const lid of (RELEASE_LINES[p.def.id]||[])){(byLine[lid]=byLine[lid]||[]).push(p.def.name)}}
+  for(const cat of CATEGORIES){const lids=FINDING_LINES[cat.id]||[];if(!lids.length)continue;const sides=cat.bilateral?['right','left']:['none'];for(const side of sides){const key=fkey(cat.id,side);const f=s.findings[key];if(!hasFinding(f))continue;if(!f.selected.some(o=>o!=='normal'&&o!=='balanced'))continue;for(const lid of lids)(byLine[lid]=byLine[lid]||[]).push('所見：'+findingText(s,key))}}
+  const clusters=Object.keys(byLine).filter(lid=>byLine[lid].length>=2);
+  if(clusters.length)html+='<div class="panel"><h3>参考メモ（筋膜ライン）</h3>'+clusters.map(lid=>'<p>'+esc(lineName(lid))+'上に候補・所見が複数あります：'+esc(byLine[lid].join('、'))+'</p>').join('')+'<p class="muted">同じライン上にリリース候補と構造的評価の所見が集まっているという参考情報です。ラインのつながりが原因であることを示すものではありません。</p></div>';
+  return html}
+function setJudgement(id,lv){const s=curSession();if(!s)return;s.judgements[id]=lv;save();render()}
+/* ================= リリース ================= */
+function toggleIntervention(id,on){const s=curSession();if(!s)return;const a=s.interventions||[];s.interventions=on?Array.from(new Set(a.concat([id]))):a.filter(x=>x!==id);save();render()}
+function releaseView(s){const props=releaseCandidates(s.findings,s.tests,s.judgements);const rec=props.filter(p=>p.recommended);const other=props.filter(p=>!p.recommended);
+  const card=p=>{const x=p.def;const checked=(s.interventions||[]).indexOf(x.id)>=0;const lt=(RELEASE_LINES[x.id]||[]).map(lid=>'<span class="tag">'+esc(lineShort(lid))+'</span>').join(' ');return '<div class="test"><div class="row"><label class="chip '+(checked?'on':'')+'"><input type="checkbox" '+(checked?'checked':'')+' onchange="toggleIntervention(\''+x.id+'\',this.checked)"> <strong>'+esc(x.name)+'</strong></label>'+(p.recommended?'<span class="tag good">評価結果から候補</span>':'<span class="muted">ほかの候補</span>')+(lt?' '+lt:'')+'</div>'
+    +'<p><strong>試す理由：</strong>'+esc(x.why)+'</p>'
+    +(p.recommended?'<p class="good">手掛かり：'+esc(p.evidence.join('、'))+'</p>':'')
+    +'<p class="muted">直後の再評価：'+esc(x.retest)+'</p></div>'};
+  let html='<div class="panel"><h2>リリース候補</h2><p>測定で確認された左右差、または構造的評価の所見から選んだ候補です。<strong>左右差は原因筋の証明ではありません。</strong></p>'
+  +'<p class="muted">数値と連携する候補は、テスト別の最小差（背屈2.0cm／頸部回旋7°／股関節内旋・外旋11°など、MDC等の根拠に基づく値）以上の左右差がある場合のみ候補になります。股関節伸展ROM（腹臥位）はエビデンスなしのため、数値があっても股関節前外側の候補の根拠にはなりません。所見と連携する候補（肩上部・前胸部・胸郭外側下部・足底／下腿内側）は、対応する仮説の見立てが「手がかりあり」の場合のみ候補になります。</p>'
+  +'<p><strong>やり方（共通）：</strong>'+esc(RELEASE_METHOD)+'</p><p class="muted">'+esc(RELEASE_WARNING)+'</p></div>';
+  html+='<details class="fold"><summary>筋膜ライン一覧（参考）</summary><p class="muted">アナトミートレイン（筋膜経線）は参考モデルです。因果の確定ルールには使いません。各ラインを構成する筋肉のみを挙げます。</p>'+AT_LINES.map(l=>'<p style="margin:8px 0"><strong>'+esc(l.name)+'</strong><br><span class="muted">'+esc(l.muscles.join('、'))+'</span></p>').join('')+'</details>';
+  if(s.redFlag)html+='<div class="warnbox">危険徴候が選択されています。リリースを行わず、医療機関への相談を優先してください。</div>';
+  else if(rec.length)html+=rec.map(card).join('');
+  else html+='<div class="warnbox">まだ絞り込みに必要な測定結果がありません。「テスト」で左右ROMなどを測定すると、根拠のある候補がここに出ます。</div>';
+  if(!s.redFlag&&other.length)html+='<details class="fold"><summary>ほかの候補（'+other.length+'件）</summary>'+other.map(card).join('')+'</details>';
+  html+='<div class="panel"><h3>計画</h3>'
+  +(s.interventionNames&&s.interventionNames.length?'<p class="muted">旧バージョンから移行した介入：'+esc(s.interventionNames.join('、'))+'</p>':'')
+  +'<label class="lbl">治療計画 / Treatment plan</label><textarea oninput="setMeta(\'plan\',this.value)">'+esc(s.plan)+'</textarea>'
+  +'<label class="lbl">次回の治療予定 / Next treatment</label><textarea oninput="setMeta(\'next\',this.value)">'+esc(s.next)+'</textarea>'
+  +'<label class="lbl">目的 / Clean-up</label><textarea oninput="setMeta(\'goal\',this.value)">'+esc(s.goal)+'</textarea></div>';
+  const doneTests=TESTS.filter(t=>testDone(s.tests[t.id]));
+  html+='<div class="panel"><h3>再評価</h3><p class="muted">同じ姿勢・測定器具で前後を比較してください。</p>'
+  +(doneTests.length?doneTests.map(t=>{const rt=s.retest[t.id]||emptyTest();return '<details class="fold"><summary>'+esc(t.name)+(testDone(rt)?'（再測定あり）':'')+'</summary>'+testResultWidget('retest',t,rt)+'</details>'}).join(''):'<p class="muted">初回テストを実施すると再評価欄が表示されます。</p>')
+  +'</div>';
+  return html}
+/* ================= レポート ================= */
+function resultText(test,t){if(!testDone(t))return '未実施';if(test.kind==='bilateral'){const unit=t.unit||test.unit||'';const diff=(t.valueRight!=null&&t.valueLeft!=null)?'（右−左 '+(t.valueRight-t.valueLeft).toFixed(1)+unit+'）':'';return '右 '+(t.valueRight==null?'—':t.valueRight)+unit+' / 左 '+(t.valueLeft==null?'—':t.valueLeft)+unit+diff}
+  if(test.kind==='choice'){const c=(test.choices||[]).find(x=>x.value===t.optionValue);return c?c.label:(t.optionValue||'未入力')}
+  const base=t.result==='positive'?'制限・所見あり':t.result==='negative'?'所見なし':t.result==='inconclusive'?'判定不能':'未実施';if(t.valueRight!=null||t.valueLeft!=null){const unit=t.unit||test.unit||'';const diff=(t.valueRight!=null&&t.valueLeft!=null)?'（右−左 '+(t.valueRight-t.valueLeft).toFixed(1)+unit+'）':'';return base+'／数値：右 '+(t.valueRight==null?'—':t.valueRight)+unit+' / 左 '+(t.valueLeft==null?'—':t.valueLeft)+unit+diff}return base}
+function reportView(s){const assessedKeys=Object.keys(s.findings).filter(k=>s.findings[k].status==='assessed');const doneTests=TESTS.filter(t=>testDone(s.tests[t.id]));const hyps=evaluateHypotheses(s.findings,s.tests);const prev=previousSession(s);
+  let html='<div class="panel"><div class="row between"><h2 style="margin:0">レポート</h2><span class="row"><button class="btn small" id="rbtnPdf" onclick="openReport(\'pdf\')">PDFとして保存</button><button class="btn secondary small" id="rbtnPrint" onclick="openReport(\'print\')">印刷</button></span></div>'
+  +'<p class="muted">どちらもレポートの全セクション（構造的評価・実施テスト・機能的要因の候補・リリース内容・治療計画・次回の治療予定・目的・前回比較）からPDFを生成し、別タブで開きます。そのPDFタブから印刷・保存できます。PDFを生成できない環境では、レポートだけのページを別タブで開きます（そのページから印刷できます）。別タブが開けない設定の場合は、ファイルとしてダウンロードします。</p>'
+  +'<p class="muted" id="reportStatus" role="status"></p>'
+  +'<p><strong>対象：</strong>'+esc(s.client||'匿名')+'　<strong>評価日時：</strong>'+esc(fmtDT(s.assessedAt))+(s.assessor?'　<strong>評価者：</strong>'+esc(s.assessor):'')+'</p>'
+  +(s.redFlag?'<div class="warnbox">危険徴候あり：通常の評価・介入を中断し、医療機関での評価を優先。</div>':'')
+  +'<p><strong>初期所見・相談内容：</strong>'+esc(s.notes||'未記入')+'</p>'
+  +'<h3 class="section">構造的評価</h3>'
+  +(assessedKeys.length?'<table><thead><tr><th>部位</th><th>所見</th></tr></thead><tbody>'+assessedKeys.map(k=>'<tr><td>'+esc(findingText(s,k).split('：')[0])+'</td><td>'+esc(findingText(s,k).split('：').slice(1).join('：'))+'</td></tr>').join('')+'</tbody></table>':'<p class="muted">評価済みの区分なし</p>')
+  +'<h3 class="section">実施テスト（初回 → 再評価）</h3>'
+  +(doneTests.length?'<table><thead><tr><th>テスト</th><th>初回</th><th>再評価</th></tr></thead><tbody>'+doneTests.map(t=>'<tr><td>'+esc(t.name)+'</td><td>'+esc(resultText(t,s.tests[t.id]))+'</td><td>'+esc(s.retest[t.id]?resultText(t,s.retest[t.id]):'未実施')+'</td></tr>').join('')+'</tbody></table>':'<p class="muted">テスト未実施</p>')
+  +'<h3 class="section">機能的要因の候補</h3>'
+  +(hyps.length?hyps.map(h=>{const lv=s.judgements[h.def.id]||h.level;return '<p>'+esc(h.def.title)+'（'+esc(hypClass(h.def.cls))+'）：'+HYP_LEVEL_LABEL[lv]+'</p>'}).join(''):'<p class="muted">候補なし</p>')
+  +'<h3 class="section">リリース内容</h3><p>'+esc((s.interventions||[]).map(id=>(releaseById(id)||{}).name).filter(Boolean).concat(s.interventionNames||[]).join('、')||'未選択')+'</p>'
+  +'<h3 class="section">治療計画</h3><p>'+esc(s.plan||'未記入')+'</p>'
+  +'<h3>次回の治療予定</h3><p>'+esc(s.next||'未記入')+'</p>'
+  +'<h3>目的</h3><p>'+esc(s.goal||'未記入')+'</p>'
+  +guideFold(GUIDE_RECORD);
+  if(prev){const rows=TESTS.filter(t=>t.kind==='bilateral'&&testDone(s.tests[t.id])&&testDone(prev.tests[t.id])).map(t=>{const a=prev.tests[t.id],b=s.tests[t.id];const unit=b.unit||t.unit||'';return '<tr><td>'+esc(t.name)+'</td><td>右 '+(a.valueRight==null?'—':a.valueRight)+' / 左 '+(a.valueLeft==null?'—':a.valueLeft)+' '+esc(unit)+'</td><td>右 '+(b.valueRight==null?'—':b.valueRight)+' / 左 '+(b.valueLeft==null?'—':b.valueLeft)+' '+esc(unit)+'</td></tr>'});
+    html+='<h3 class="section">前回セッションとの測定値比較（'+esc(fmtDT(prev.assessedAt))+'）</h3>'+(rows.length?'<table><thead><tr><th>テスト</th><th>前回</th><th>今回</th></tr></thead><tbody>'+rows.join('')+'</tbody></table>':'<p class="muted">前回と比較できる数値テストがありません。</p>')}
+  html+='<div class="warnbox">姿勢と機能の記録です。医学的診断、原因の確定、治療効果の保証を意味しません。テストの信頼性・参考値には「エビデンス未確認」の項目を含みます。</div></div>';
+  return html}
+/* ================= レポート印刷（全セクション専用描画） ================= */
+function reportPrintHTML(s){const assessedKeys=Object.keys(s.findings).filter(k=>s.findings[k].status==='assessed');const doneTests=TESTS.filter(t=>testDone(s.tests[t.id]));const hyps=evaluateHypotheses(s.findings,s.tests);const prev=previousSession(s);
+  let h='<h1>評価レポート</h1>'
+  +'<p><strong>対象：</strong>'+esc(s.client||'匿名')+'　<strong>評価日時：</strong>'+esc(fmtDT(s.assessedAt))+(s.assessor?'　<strong>評価者：</strong>'+esc(s.assessor):'')+'</p>'
+  +(s.redFlag?'<div class="prwarn">危険徴候あり：通常の評価・介入を中断し、医療機関での評価を優先。</div>':'')
+  +'<p><strong>初期所見・相談内容：</strong>'+esc(s.notes||'未記入')+'</p>'
+  +'<h2>構造的評価</h2>'
+  +(assessedKeys.length?'<table><thead><tr><th>部位</th><th>所見</th></tr></thead><tbody>'+assessedKeys.map(k=>'<tr><td>'+esc(findingText(s,k).split('：')[0])+'</td><td>'+esc(findingText(s,k).split('：').slice(1).join('：'))+'</td></tr>').join('')+'</tbody></table>':'<p>評価済みの区分なし</p>')
+  +'<h2>実施テスト（初回 → 再評価）</h2>'
+  +(doneTests.length?'<table><thead><tr><th>テスト</th><th>初回</th><th>再評価</th></tr></thead><tbody>'+doneTests.map(t=>'<tr><td>'+esc(t.name)+'</td><td>'+esc(resultText(t,s.tests[t.id]))+'</td><td>'+esc(s.retest[t.id]?resultText(t,s.retest[t.id]):'未実施')+'</td></tr>').join('')+'</tbody></table>':'<p>テスト未実施</p>')
+  +'<h2>機能的要因の候補</h2>'
+  +(hyps.length?hyps.map(x=>{const lv=s.judgements[x.def.id]||x.level;return '<p>'+esc(x.def.title)+'（'+esc(hypClass(x.def.cls))+'）：'+HYP_LEVEL_LABEL[lv]+'</p>'}).join(''):'<p>候補なし</p>')
+  +'<h2>リリース内容</h2><p>'+esc((s.interventions||[]).map(id=>(releaseById(id)||{}).name).filter(Boolean).concat(s.interventionNames||[]).join('、')||'未選択')+'</p>'
+  +'<h2>治療計画</h2><p>'+esc(s.plan||'未記入')+'</p>'
+  +'<h2>次回の治療予定</h2><p>'+esc(s.next||'未記入')+'</p>'
+  +'<h2>目的</h2><p>'+esc(s.goal||'未記入')+'</p>';
+  if(prev){const rows=TESTS.filter(t=>t.kind==='bilateral'&&testDone(s.tests[t.id])&&testDone(prev.tests[t.id])).map(t=>{const a=prev.tests[t.id],b=s.tests[t.id];const unit=b.unit||t.unit||'';return '<tr><td>'+esc(t.name)+'</td><td>右 '+(a.valueRight==null?'—':a.valueRight)+' / 左 '+(a.valueLeft==null?'—':a.valueLeft)+' '+esc(unit)+'</td><td>右 '+(b.valueRight==null?'—':b.valueRight)+' / 左 '+(b.valueLeft==null?'—':b.valueLeft)+' '+esc(unit)+'</td></tr>'});
+    h+='<h2>前回セッションとの測定値比較（'+esc(fmtDT(prev.assessedAt))+'）</h2>'+(rows.length?'<table><thead><tr><th>テスト</th><th>前回</th><th>今回</th></tr></thead><tbody>'+rows.join('')+'</tbody></table>':'<p>前回と比較できる数値テストがありません。</p>')}
+  h+='<div class="prnote">姿勢と機能の記録です。医学的診断、原因の確定、治療効果の保証を意味しません。テストの信頼性・参考値には「エビデンス未確認」の項目を含みます。</div>';
+  return h}
+function fmtDateForTitle(ms){const d=new Date(ms);if(!Number.isFinite(d.getTime()))return '';const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())}
+function reportFileName(s){const clientName=(s.client||'').trim()||'匿名';const dateStr=fmtDateForTitle(s.assessedAt);return 'POSTURE LAB レポート（'+clientName+(dateStr?'・'+dateStr:'')+'）'}
+function setReportStatus(msg){const el=document.getElementById('reportStatus');if(el)el.textContent=msg}
+function setReportBusy(busy){for(const id of['rbtnPdf','rbtnPrint']){const b=document.getElementById(id);if(b)b.disabled=busy}}
+function downloadBlob(blob,name){const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},4000)}
+/* フォールバック用：レポート全内容だけの単体HTML文書 */
+function reportStandaloneHTML(s){const title=reportFileName(s);
+  const css='body{font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;background:#fff;color:#000;margin:0;padding:26px 28px;font-size:13.5px}h1{font-size:20px;margin:0 0 10px}h2{font-size:15px;margin:18px 0 6px;border-bottom:1.5px solid #333;padding-bottom:3px;break-after:avoid}p{margin:4px 0;line-height:1.65}table{border-collapse:collapse;width:100%;font-size:12.5px}td,th{border:1px solid #888;padding:5px 7px;text-align:left;vertical-align:top;color:#000}tr{break-inside:avoid}.prwarn{border:1px solid #a97e47;background:#fbf3e2;padding:8px 10px;margin:10px 0}.prnote{font-size:12px;color:#444;border:1px solid #aaa;padding:8px 10px;margin-top:16px}.toolbar{border:1.5px solid #146c82;background:#eef7f9;padding:10px 12px;margin-bottom:16px;line-height:1.6}@media print{.toolbar{display:none}body{padding:0}@page{margin:14mm}}';
+  return '<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(title)+'</title><style>'+css+'</style></head><body>'
+  +'<div class="toolbar"><strong>POSTURE LAB レポート</strong><br>このページはレポートの全セクションだけを表示しています。ブラウザの印刷（Ctrl／Cmd＋P）から印刷／PDF保存できます。</div>'
+  +reportPrintHTML(s)
+  +'</body></html>'}
+/* 1ページに収まらないブロックを要素・行の境界で分割する（行やテキストの途中で割らない） */
+function splitBlock(block,limitPx){
+  if(block.offsetHeight<=limitPx)return [block];
+  const table=block.querySelector('table');
+  if(table){
+    const head=Array.from(block.children).filter(el=>el!==table);
+    const thead=table.querySelector('thead');
+    const rows=Array.from(table.querySelectorAll('tbody tr'));
+    const headH=head.reduce((a,el)=>a+el.offsetHeight,0);
+    const theadH=thead?thead.offsetHeight:0;
+    const mkChunk=function(rowsSubset,includeHead){const w=document.createElement('div');if(includeHead)head.forEach(el=>w.appendChild(el.cloneNode(true)));const t=document.createElement('table');if(thead)t.appendChild(thead.cloneNode(true));const tb=document.createElement('tbody');rowsSubset.forEach(r=>tb.appendChild(r.cloneNode(true)));t.appendChild(tb);w.appendChild(t);return w};
+    const chunks=[];let cur=[];let curH=headH+theadH;
+    for(const r of rows){const rh=r.offsetHeight;if(cur.length&&curH+rh>limitPx){chunks.push(mkChunk(cur,chunks.length===0));cur=[];curH=theadH}cur.push(r);curH+=rh}
+    if(cur.length)chunks.push(mkChunk(cur,chunks.length===0));
+    if(chunks.length)return chunks;
+  }
+  const parts=[];let cur=document.createElement('div');let curH=0;
+  for(const child of Array.from(block.children)){const ch=child.offsetHeight;if(cur.children.length&&curH+ch>limitPx){parts.push(cur);cur=document.createElement('div');curH=0}cur.appendChild(child.cloneNode(true));curH+=ch}
+  if(cur.children.length)parts.push(cur);
+  return parts.length?parts:[block];
+}
+/* PDF生成：セクション単位に描画し、A4ページへ収まるよう配置する（途中で切れない改ページ） */
+async function generateReportPDF(s){
+  const container=document.createElement('div');
+  container.className='pdfgen';
+  container.innerHTML=reportPrintHTML(s);
+  const kids=Array.from(container.children);container.innerHTML='';
+  const blocks=[];
+  for(let i=0;i<kids.length;i++){const w=document.createElement('div');w.appendChild(kids[i]);if(kids[i].tagName==='H2'&&i+1<kids.length){w.appendChild(kids[i+1]);i++}container.appendChild(w);blocks.push(w)}
+  document.body.appendChild(container);
+  try{
+    const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4',orientation:'portrait',compress:true});
+    doc.setProperties({title:reportFileName(s)});
+    const pageW=210,pageH=297,margin=14,contentW=pageW-margin*2,contentH=pageH-margin*2;
+    /* 高さ上限（px）はブロック幅から換算し、収まらないブロックは境界で分割してから配置する */
+    const units=[];
+    for(const block of blocks){
+      const limitPx=Math.floor(contentH/contentW*(block.clientWidth||684));
+      const chunks=splitBlock(block,limitPx);
+      if(chunks.length===1&&chunks[0]===block){units.push(block)}
+      else{for(const c of chunks){container.insertBefore(c,block);units.push(c)}container.removeChild(block)}
+    }
+    let y=margin;
+    for(const block of units){
+      const canvas=await html2canvas(block,{scale:2,backgroundColor:'#ffffff',logging:false});
+      const hmm=canvas.height/canvas.width*contentW;
+      if(hmm<=contentH){
+        if(y+hmm>pageH-margin){doc.addPage();y=margin}
+        doc.addImage(canvas.toDataURL('image/jpeg',0.95),'JPEG',margin,y,contentW,hmm);
+        y+=hmm+1.5;
+      }else{
+        const slicePx=Math.max(1,Math.floor(contentH/contentW*canvas.width));
+        let offset=0;
+        while(offset<canvas.height){
+          if(offset>0||y>margin){doc.addPage();y=margin}
+          const h=Math.min(slicePx,canvas.height-offset);
+          const c2=document.createElement('canvas');c2.width=canvas.width;c2.height=h;
+          const ctx=c2.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,c2.width,h);
+          ctx.drawImage(canvas,0,offset,canvas.width,h,0,0,canvas.width,h);
+          const shmm=h/canvas.width*contentW;
+          doc.addImage(c2.toDataURL('image/jpeg',0.95),'JPEG',margin,y,contentW,shmm);
+          y+=shmm;offset+=h;
+        }
+        y+=1.5;
+      }
+    }
+    return doc;
+  }finally{document.body.removeChild(container)}
+}
+let _reportBusy=false;
+async function openReport(mode){const s=curSession();if(!s||_reportBusy)return;_reportBusy=true;setReportBusy(true);setReportStatus('PDFを生成しています…');
+  let win=null;
+  try{win=window.open('','_blank')}catch(e){win=null}
+  if(win){try{win.document.open();win.document.write('<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>PDFを生成しています…</title></head><body style="font-family:sans-serif;padding:24px;line-height:1.7">PDFを生成しています。<br>そのままお待ちください。</body></html>');win.document.close()}catch(e){}}
+  try{
+    if(!window.jspdf||!window.jspdf.jsPDF||typeof html2canvas!=='function')throw new Error('PDFライブラリを読み込めませんでした');
+    const doc=await generateReportPDF(s);
+    const blob=doc.output('blob');
+    if(win){try{win.location.href=URL.createObjectURL(blob);setReportStatus('PDFを別タブで開きました。そのタブから印刷・保存できます。')}catch(e){downloadBlob(blob,reportFileName(s)+'.pdf');setReportStatus('別タブへ切り替えられなかったため、PDFをダウンロードしました。')}}
+    else{downloadBlob(blob,reportFileName(s)+'.pdf');setReportStatus('別タブを開けなかったため、PDFをダウンロードしました。')}
+  }catch(err){
+    const html=reportStandaloneHTML(s);
+    let shown=false;
+    if(win){try{win.document.open();win.document.write(html);win.document.close();shown=true}catch(e){shown=false}}
+    if(!shown){try{const u=URL.createObjectURL(new Blob([html],{type:'text/html'}));const w2=window.open(u,'_blank');shown=!!w2}catch(e){shown=false}}
+    if(shown)setReportStatus('PDFを生成できなかったため、レポートだけのページを別タブで開きました。そのページから印刷できます。');
+    else{downloadBlob(new Blob([html],{type:'text/html'}),reportFileName(s)+'.html');setReportStatus('PDF生成と別タブ表示ができなかったため、レポートのHTMLファイルをダウンロードしました。そのファイルを開いて印刷できます。')}
+  }
+  _reportBusy=false;setReportBusy(false);
+}
+/* ================= 開発用：仕様エクスポート（読み取り専用） =================
+   アプリ内の定義オブジェクト（CATEGORIES / TESTS / HYPOTHESES / RELEASES / GUIDES /
+   AT_LINES / RELEASE_LINES / FINDING_LINES）と推論エンジン関数の実物をそのままJSON化する。
+   顧客・セッション等の個人データは一切含めない。既存の評価・推論・介入ロジックは変更しない。 */
+function specClone(v){
+  if(typeof v==='function')return{__type:'function',name:v.name||'',source:String(v)};
+  if(v===undefined)return{__type:'undefined'};
+  if(Array.isArray(v))return v.map(specClone);
+  if(v&&typeof v==='object'){const o={};for(const k of Object.keys(v))o[k]=specClone(v[k]);return o}
+  return v;
+}
+function buildSpecExport(){
+  const dupIds=arr=>{const seen={},dups=[];for(const x of arr){if(!x||x.id==null)continue;if(seen[x.id])dups.push(x.id);seen[x.id]=true}return dups};
+  const catIds=new Set(CATEGORIES.map(c=>c.id));
+  const testIds=new Set(TESTS.map(t=>t.id));
+  const missingRefs=[];
+  const checkCat=(where,catId)=>{if(!catIds.has(catId))missingRefs.push(where+'：カテゴリID「'+catId+'」が未定義')};
+  const checkTest=(where,testId)=>{if(!testIds.has(testId))missingRefs.push(where+'：テストID「'+testId+'」が未定義')};
+  const checkOpts=(where,catId,opts)=>{const cat=catById(catId);if(!cat)return;const valid=new Set(cat.options.map(o=>o.id));for(const o of (opts||[]))if(!valid.has(o))missingRefs.push(where+'：選択肢ID「'+o+'」（カテゴリ「'+catId+'」）が未定義')};
+  for(const t of TESTS)for(const tr of (t.triggers||[])){checkCat('テスト「'+t.id+'」の所見トリガー',tr.cat);checkOpts('テスト「'+t.id+'」の所見トリガー',tr.cat,tr.opts)}
+  for(const h of HYPOTHESES){
+    for(const tr of (h.findingTriggers||[])){checkCat('仮説「'+h.id+'」の所見トリガー',tr.cat);checkOpts('仮説「'+h.id+'」の所見トリガー',tr.cat,tr.opts)}
+    for(const r of (h.rules||[]))checkTest('仮説「'+h.id+'」の支持・反証ルール',r.testId);
+    for(const r of (h.requiresAll||[]))checkTest('仮説「'+h.id+'」の複合条件（requiresAll）',r.testId);
+    for(const tid of (h.relatedTests||[]))checkTest('仮説「'+h.id+'」の関連テスト',tid);
+  }
+  for(const r of RELEASES){
+    if(r.testId)checkTest('リリース候補「'+r.id+'」の連携テスト',r.testId);
+    if(r.findingCat){checkCat('リリース候補「'+r.id+'」の連携所見',r.findingCat);checkOpts('リリース候補「'+r.id+'」の連携所見',r.findingCat,r.findingOptions)}
+  }
+  for(const id of Object.keys(RELEASE_LINES))if(!RELEASES.some(r=>r.id===id))missingRefs.push('RELEASE_LINES：リリース候補ID「'+id+'」が未定義');
+  for(const id of Object.keys(GUIDES))if(!catIds.has(id))missingRefs.push('GUIDES：カテゴリID「'+id+'」が未定義');
+  const counts={
+    categories:{actual:CATEGORIES.length,expected:14},
+    tests:{actual:TESTS.length,expected:28},
+    hypotheses:{actual:HYPOTHESES.length,expected:14},
+    releases:{actual:RELEASES.length,expected:19}
+  };
+  const duplicates={categories:dupIds(CATEGORIES),tests:dupIds(TESTS),hypotheses:dupIds(HYPOTHESES),releases:dupIds(RELEASES)};
+  const warnings=[];
+  for(const k of Object.keys(counts))if(counts[k].actual!==counts[k].expected)warnings.push(k+' の件数が想定と異なります（実際 '+counts[k].actual+' 件／想定 '+counts[k].expected+' 件）');
+  for(const k of Object.keys(duplicates))if(duplicates[k].length)warnings.push(k+' に重複IDがあります（'+duplicates[k].join('、')+'）');
+  if(missingRefs.length)warnings.push('未定義の参照が '+missingRefs.length+' 件あります');
+  const validation={counts:counts,duplicates:duplicates,missingReferences:missingRefs,warnings:warnings,ok:warnings.length===0};
+  const engineFunctions={};
+  const engineList=[S,A,T,catById,testById,hypById,releaseById,atLine,lineShort,lineName,hypClass,fkey,emptyFinding,emptyTest,displayStatus,hasFinding,optionsConflict,testDone,verdictOf,triggerMatches,anyTriggerHits,activeTagCats,activeHypotheses,unitMinDiff,testMinDiff,numericInfo,isNoEvidenceTest,thomasAngleVerdict,evidenceBadgeHTML,thresholdNoteHTML,bilateralInfo,suggestedTests,measuredText,evaluateHypotheses,releaseCandidates,toggleFinding,setChoice,setJudge,testResultWidget];
+  for(const fn of engineList)engineFunctions[fn.name||'(anonymous)']={name:fn.name||'',source:String(fn)};
+  return {
+    format:'posture-lab-spec',
+    exportFormatVersion:2,
+    exportedAt:new Date().toISOString(),
+    sourceApp:{name:'POSTURE LAB リンク版',dataFormat:'posture-lab-link',dataFormatVersion:1,storageKey:LS_KEY},
+    note:'このJSONはアプリ内の定義オブジェクトと関数の実物から生成されています。顧客・セッション等の個人データは含みません。未定義の項目はキーの欠落または null としてそのまま出力されます。',
+    validation:validation,
+    measurementThresholds:{byTest:TESTS.filter(t=>typeof t.minDiff==='number').map(t=>({testId:t.id,testName:t.name,minDiff:t.minDiff,unit:t.unit||null,basis:t.minDiffBasis||null})),note:'左右差の最小差はテスト別に、MDC等の根拠に基づく値を用います（単位一律の便宜的設定は廃止）。左右差の絶対値がテスト別の最小差以上ある場合のみ、測定値による手がかりとして扱います。',secondsFallback:{value:3,unit:'秒',status:'エビデンス未確認（便宜的設定）',note:'時間（秒）で測る項目は今回の検証対象外のため、従来の便宜的設定3秒を維持します。'},noEvidenceTests:TESTS.filter(t=>t.evidenceUse==='none').map(t=>({testId:t.id,testName:t.name,note:t.evidenceNote||null,handling:'記録と表示は残しますが、仮説の支持・反証（手がかり判定）とリリース連携の根拠には使いません。'})),thomasRule:{testId:'thomas',minDiff:6,unit:'°',note:'トーマステストは角度方式（骨盤統制＋傾斜計等で股関節伸展角を測定し、数値が入力されている場合）のみ仮説の根拠にします。pass/fail（陽性/陰性）だけの結果は根拠に数えません（pass/fail判定のkappa 検者内0.40／検者間0.33）。角度の左右差の目安6°はSEM約2°からの換算値で、原著のMDC報告はありません。'},referenceLowerBounds:TESTS.filter(t=>typeof t.refLow==='number').map(t=>({testId:t.id,refLow:t.refLow,unit:t.unit||null,note:'左右両方の値がこの参考下限未満の場合に「両側とも参考値未満」として測定値の手がかりに数えます。参考値です。'})),releaseHypothesisGate:specClone(RELEASE_HYP_GATE),releaseGateNote:'所見連携型のリリース候補は、対応する仮説の見立てが「手がかりあり」の場合のみ推奨化します。'},
+    constants:specClone({UNVERIFIED:UNVERIFIED,ORIGIN_LABEL:ORIGIN_LABEL,APP_DETAIL:APP_DETAIL,MVP_TEST_ORDER:MVP_TEST_ORDER,HYP_LEVEL_LABEL:HYP_LEVEL_LABEL,UNIT_MIN_DIFF:UNIT_MIN_DIFF,NO_EVIDENCE_TEST_IDS:TESTS.filter(t=>t.evidenceUse==='none').map(t=>t.id),RELEASE_HYP_GATE:RELEASE_HYP_GATE,RELEASE_METHOD:RELEASE_METHOD,RELEASE_WARNING:RELEASE_WARNING,GUIDE_RECORD:GUIDE_RECORD}),
+    categories:{guideIntro:GUIDE_INTRO,items:CATEGORIES.map(c=>{const o=specClone(c);o.guide=(GUIDES[c.id]===undefined?null:GUIDES[c.id]);return o})},
+    tests:{items:specClone(TESTS)},
+    hypotheses:{classes:specClone(HYP_CLASSES),items:specClone(HYPOTHESES)},
+    releases:{method:RELEASE_METHOD,warning:RELEASE_WARNING,items:RELEASES.map(r=>{const o=specClone(r);o.atLines=(RELEASE_LINES[r.id]===undefined?null:RELEASE_LINES[r.id].slice());return o})},
+    anatomyTrains:{lines:specClone(AT_LINES),releaseLines:specClone(RELEASE_LINES),findingLines:specClone(FINDING_LINES)},
+    engine:{functions:engineFunctions}
+  };
+}
+function exportSpecJSON(){
+  const spec=buildSpecExport();
+  const blob=new Blob([JSON.stringify(spec,null,2)],{type:'application/json;charset=utf-8'});
+  const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download='posture_lab_spec_'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);
+  const el=document.getElementById('specStatus');
+  if(el){const c=spec.validation.counts;el.textContent=spec.validation.ok?('検証OK：カテゴリ'+c.categories.actual+'件・テスト'+c.tests.actual+'件・仮説'+c.hypotheses.actual+'件・リリース'+c.releases.actual+'件を書き出しました'):('警告：'+spec.validation.warnings.join('／'))}
+}
+/* ================= 初期化 ================= */
+checkLegacy();
+render();
+</script>
+</body>
+</html>
